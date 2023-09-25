@@ -1,4 +1,5 @@
-# flask_tutorial
-https://flask.palletsprojects.com
+https://flask.palletsprojects.com/en/2.3.x/tutorial/templates/
 
+```python
 flask --app flaskr run --debug
+```

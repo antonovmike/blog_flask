@@ -32,10 +32,6 @@ def create_app(test_config=None):
     def hello():
         return 'Hello, World!'
 
-    @app.route('/')
-    def home():
-        return 'This is the home page!'
-
     from . import db
     db.init_app(app)
 

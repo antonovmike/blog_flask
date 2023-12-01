@@ -9,6 +9,12 @@ with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
     _data_sql = f.read().decode('utf8')
 
 
+# the original code from the documentation on the site
+# db_fd, db_path = tempfile.mkdtemp()
+# causes unpacking error, so it was replaced by
+# db_fd, db_path = tempfile.mkstemp()
+
+
 @pytest.fixture
 def app():
     # db_fd, db_path = tempfile.mkdtemp()

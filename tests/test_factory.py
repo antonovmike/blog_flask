@@ -7,6 +7,10 @@ def test_config():
 
 
 def test_hello(client):
-    # response = client.get('/hello')
     response = client.get('/hello', follow_redirects=True)
     assert response.data == b'Hello, World!'
+
+# the original code from the documentation on the site
+# response = client.get('/hello')
+# causes an error, so it was replaced by
+# response = client.get('/hello', follow_redirects=True)

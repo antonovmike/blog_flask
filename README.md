@@ -1,9 +1,13 @@
-https://flask.palletsprojects.com/en/2.3.x/tutorial/templates/
+https://flask.palletsprojects.com/en/2.3.x/tutorial/blog/
 
-```python
+```bash
 flask --app flaskr run --debug
 ```
 
-```python
+```bash
 pip install -e .
+```
+
+```bash
+pip install pytest coverage
 ```

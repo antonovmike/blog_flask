@@ -1,15 +1,24 @@
-https://flask.palletsprojects.com/en/2.3.x/tutorial/blog/
+https://flask.palletsprojects.com/
 
-https://flask.palletsprojects.com/en/2.3.x/tutorial/tests/
-
+Libraries:
+```bash
+pip install pytest coverage
+```
+Run:
 ```bash
 flask --app flaskr run --debug
 ```
-
+Install the Project:
 ```bash
 pip install -e .
 ```
-
+Test:
 ```bash
-pip install pytest coverage
+pytest
+```
+```bash
+pytest -v
+```
+```bash
+coverage run -m pytest
 ```

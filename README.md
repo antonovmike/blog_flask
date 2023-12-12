@@ -29,9 +29,9 @@ Configure the Secret Key
 https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key
 Swap SECRET_KEY='dev' with some random bytes
 
-[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/)
+[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/):
 
-+ A detail view to show a single post. Click a post’s title to go to its page.
+- ✅ A detail view to show a single post. Click a post’s title to go to its page.
 - Like / unlike a post.
 - Comments.
 - Tags. Clicking a tag shows all the posts with that tag.

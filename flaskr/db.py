@@ -27,12 +27,15 @@ def init_db():
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
 
+    db.execute('ALTER TABLE post ADD COLUMN likes INTEGER DEFAULT 0')
+
     # Like / unlike a post
     db.execute('''
         CREATE TABLE post_like (
             id INTEGER PRIMARY KEY,
             user_id INTEGER,
             post_id INTEGER,
+            likes INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES user (id),
             FOREIGN KEY (post_id) REFERENCES post (id)
         )

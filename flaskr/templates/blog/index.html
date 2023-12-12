@@ -21,7 +21,7 @@
       </header>
       <p class="body">{{ post['body'] }}</p>
       <form method="POST" action="{{ url_for('blog.like', id=post['id']) }}">
-        <input type="submit" value="Like">
+        <input type="submit" value="Like ({{ post['likes'] }})">
       </form>
       <form method="POST" action="{{ url_for('blog.unlike', id=post['id']) }}">
         <input type="submit" value="Unlike">

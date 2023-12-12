@@ -21,6 +21,12 @@ def index():
     return render_template('blog/index.html', posts=posts)
 
 
+@bp.route('/<int:id>')
+def post(id):
+    post = get_post(id)
+    return render_template('blog/post.html', post=post)
+
+
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():

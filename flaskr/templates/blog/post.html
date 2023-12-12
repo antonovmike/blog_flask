@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <title>{{ post.title }}</title>
+  <meta charset="UTF-8">
+  <title>{{ post.title }}</title>
 </head>
 <body>
-   <h1>{{ post.title }}</h1>
-   <p>by {{ post.username }} on {{ post.created.strftime('%Y-%m-%d') }}</p>
-   <p>{{ post.body }}</p>
+  <h1>{{ post.title }}</h1>
+  <p>by {{ post.username }} on {{ post.created.strftime('%Y-%m-%d') }}</p>
+  <p>{{ post.body }}</p>
+  <form method="POST" action="{{ url_for('blog.like', id=post['id']) }}">
+    <input type="submit" value="Like">
+  </form>
+  <form method="POST" action="{{ url_for('blog.unlike', id=post['id']) }}">
+    <input type="submit" value="Unlike">
+  </form>
 </body>
 </html>

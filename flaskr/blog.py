@@ -109,7 +109,6 @@ def delete(id):
 
 
 # Like / unlike a post
-# Обновите маршруты "лайк" и "дислайк"
 @bp.route('/<int:id>/like', methods=('POST',))
 @login_required
 def like(id):
@@ -137,5 +136,12 @@ def unlike(id):
         'DELETE FROM post_like WHERE user_id = ? AND post_id = ?',
         (g.user['id'], id)
     )
+    db.execute(
+        'UPDATE post SET likes = likes - 1 WHERE id = ?',
+        (id,)
+    )
     db.commit()
-    return redirect(url_for('blog.post', id=id))
+    post = get_post(id)
+    post = dict(post)
+    post['likes'] = db.execute('SELECT likes FROM post WHERE id = ?', (id,)).fetchone()['likes']
+    return render_template('blog/post.html', post=post)

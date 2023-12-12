@@ -14,14 +14,11 @@ bp = Blueprint('blog', __name__)
 def index():
     db = get_db()
     posts = db.execute(
-        'SELECT p.id, title, body, created, author_id, username, likes'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
+        'SELECT p.id, title, body, created, author_id, username, '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes '
+        'FROM post p JOIN user u ON p.author_id = u.id '
+        'ORDER BY created DESC'
     ).fetchall()
-    # for post in posts:
-    #     post = dict(post)
-    #     post['likes'] = db.execute('SELECT likes FROM post WHERE id = ?', (post['id'],)).fetchone()['likes']
-    # return render_template('blog/index.html', posts=posts)
     return render_template('blog/index.html', posts=posts)
 
 
@@ -59,10 +56,11 @@ def create():
 
 def get_post(id, check_author=True):
     post = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username, likes'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
+        'SELECT p.id, title, body, created, author_id, username, '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes '
+        'FROM post p JOIN user u ON p.author_id = u.id '
+        'WHERE p.id = ?',
+        (id, )
     ).fetchone()
 
     if post is None:
@@ -112,24 +110,18 @@ def delete(id):
     return redirect(url_for('blog.index'))
 
 
-# Like / unlike a post
 @bp.route('/<int:id>/like', methods=('POST',))
 @login_required
 def like(id):
     db = get_db()
     db.execute(
-       'INSERT INTO post_like (user_id, post_id) VALUES (?, ?)',
-       (g.user['id'], id)
-    )
-    db.execute(
-       'UPDATE post SET likes = likes + 1 WHERE id = ?',
-       (id,)
+        'UPDATE post_like SET liked = TRUE WHERE user_id = ? AND post_id = ?',
+        (g.user['id'], id)
     )
     db.commit()
     post = get_post(id)
     post = dict(post)
-    post['likes'] = db.execute('SELECT likes FROM post WHERE id = ?', (id,)).fetchone()[
-        'likes']
+    post['likes'] = db.execute('SELECT COUNT(*) FROM post_like WHERE post_id = ? AND liked = TRUE', (id,)).fetchone()[0]
     return render_template('blog/post.html', post=post)
 
 
@@ -138,15 +130,11 @@ def like(id):
 def unlike(id):
     db = get_db()
     db.execute(
-        'DELETE FROM post_like WHERE user_id = ? AND post_id = ?',
+        'UPDATE post_like SET liked = FALSE WHERE user_id = ? AND post_id = ?',
         (g.user['id'], id)
-    )
-    db.execute(
-        'UPDATE post SET likes = likes - 1 WHERE id = ?',
-        (id,)
     )
     db.commit()
     post = get_post(id)
     post = dict(post)
-    post['likes'] = db.execute('SELECT likes FROM post WHERE id = ?', (id,)).fetchone()['likes']
+    post['likes'] = db.execute('SELECT COUNT(*) FROM post_like WHERE post_id = ? AND liked = TRUE', (id,)).fetchone()[0]
     return render_template('blog/post.html', post=post)

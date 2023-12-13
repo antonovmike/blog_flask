@@ -120,7 +120,7 @@ def like(id):
     if existing_like is not None:
         return redirect(url_for('blog.post', id=id))
     db.execute(
-        'INSERT OR REPLACE INTO post_like (user_id, post_id, liked) VALUES (?, ?, TRUE)',
+        'INSERT INTO post_like (user_id, post_id, liked) VALUES (?, ?, TRUE)',
         (g.user['id'], id)
     )
 
@@ -136,7 +136,7 @@ def like(id):
 def unlike(id):
     db = get_db()
     db.execute(
-        'UPDATE post_like SET liked = FALSE WHERE user_id = ? AND post_id = ?',
+        'DELETE FROM post_like WHERE user_id = ? AND post_id = ?',
         (g.user['id'], id)
     )
     db.commit()

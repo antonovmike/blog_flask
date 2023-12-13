@@ -66,9 +66,6 @@ def get_post(id, check_author=True):
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
 
-    # if check_author and post['author_id'] != g.user['id']:
-    #     abort(403)
-
     return post
 
 
@@ -120,12 +117,13 @@ def like(id):
     ).fetchone()
 
     # Likes should be unique
-
+    if existing_like is not None:
+        return redirect(url_for('blog.post', id=id))
     db.execute(
         'INSERT OR REPLACE INTO post_like (user_id, post_id, liked) VALUES (?, ?, TRUE)',
         (g.user['id'], id)
     )
-    print('def like', g.user['id'], id)
+
     db.commit()
     post = get_post(id)
     post = dict(post)

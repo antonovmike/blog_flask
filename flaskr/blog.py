@@ -74,7 +74,7 @@ def get_post(id, check_author=True):
         'WHERE post_id = ? '
         'ORDER BY created DESC',
         (id,)
-    ).fetchone()
+    ).fetchall()
 
     return dict(post=post, comments=comments)
     # return render_template('blog/post.html', **post)

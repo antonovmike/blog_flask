@@ -69,23 +69,15 @@ def get_post(id, check_author=True):
         abort(404, f"Post id {id} doesn't exist.")
 
     comments = get_db().execute(
-        'SELECT c.id, body, author_id, username, created '
+        'SELECT c.id, body, created, author_id, username '
         'FROM comment c JOIN user u ON c.author_id = u.id '
         'WHERE post_id = ? '
         'ORDER BY created DESC',
         (id,)
-    ).fetchall()
-    comments = [dict(row) for row in comments]
-    print('---------->TEST')
-    print('comments:', comments)
-    # for row in comments:
-    #     # 0 'comment id', 1 'content', 2 'user id', 3 'username', 4 'created'
-    #     print('comment id', row[0], 'content', row[1], 'user id', row[2], 'username', row[3])
-    #     print('date', row[4])
-    print('---------->TEST')
-    return render_template('blog/post.html', post=post, comments=comments)
-    # return post
+    ).fetchone()
 
+    return dict(post=post, comments=comments)
+    # return render_template('blog/post.html', **post)
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required

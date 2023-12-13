@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{ post.title }}</title>
+  <title>{{ post['post'].title }}</title>
 </head>
 <body>
-  <h1>{{ post.title }}</h1>
-  <p>by {{ post.username }} on {{ post.created.strftime('%Y-%m-%d') }}</p>
-  <p>{{ post.body }}</p>
-  {% if g.user['id'] == post['author_id'] %}
-    <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+  <h1>{{ post['post'].title }}</h1>
+  <p>by {{ post['post'].username }} on {{ post['post'].created.strftime('%Y-%m-%d') }}</p>
+  <p>{{ post['post'].body }}</p>
+  {% if g.user['id'] == post['post'].author_id %}
+    <a class="action" href="{{ url_for('blog.update', id=post['post'].id) }}">Edit</a>
   {% endif %}
-  <form method="POST" action="{{ url_for('blog.like', id=post['id']) }}">
-    <input type="submit" value="Like ({{ post.likes }})">
+  <form method="POST" action="{{ url_for('blog.like', id=post['post'].id) }}">
+    <input type="submit" value="Like ({{ post['post'].likes }})">
   </form>
-  <form method="POST" action="{{ url_for('blog.comment', id=post['id']) }}">
+  <form method="POST" action="{{ url_for('blog.comment', id=post['post'].id) }}">
     <textarea name="body" placeholder="Leave a comment"></textarea>
     <input type="submit" value="Comment">
   </form>
-  <p>Comments: {{ post['comments'] }}</p>
-  {% for comment in comments %}
+
+  {% for comment in post['comments'] %}
     <div class="comment">
-      <p>{{ comment.body }}</p>
-      <p>by {{ comment.username }} on {{ comment.created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+      <p>Comment {{ comment['body'] }}</p>
+      <p>by {{ comment['username'] }}</p>
     </div>
   {% endfor %}
+
 </body>
 </html>

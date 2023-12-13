@@ -116,29 +116,17 @@ def like(id):
         (g.user['id'], id)
     ).fetchone()
 
-    # Likes should be unique
     if existing_like is not None:
-        return redirect(url_for('blog.post', id=id))
-    db.execute(
-        'INSERT INTO post_like (user_id, post_id, liked) VALUES (?, ?, TRUE)',
-        (g.user['id'], id)
-    )
+        db.execute(
+            'DELETE FROM post_like WHERE user_id = ? AND post_id = ?',
+            (g.user['id'], id)
+        )
+    else:
+        db.execute(
+            'INSERT INTO post_like(user_id, post_id, liked) VALUES(?, ?, TRUE)',
+            (g.user['id'], id)
+        )
 
-    db.commit()
-    post = get_post(id)
-    post = dict(post)
-    post['likes'] = db.execute('SELECT COUNT(*) FROM post_like WHERE post_id = ? AND liked = TRUE', (id,)).fetchone()[0]
-    return render_template('blog/post.html', post=post)
-
-
-@bp.route('/<int:id>/unlike', methods=('POST',))
-@login_required
-def unlike(id):
-    db = get_db()
-    db.execute(
-        'DELETE FROM post_like WHERE user_id = ? AND post_id = ?',
-        (g.user['id'], id)
-    )
     db.commit()
     post = get_post(id)
     post = dict(post)

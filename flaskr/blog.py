@@ -63,24 +63,6 @@ def get_post(id, check_author=True):
         (id, )
     ).fetchone()
 
-    print('--------->TEST', g.user['id'], id)
-    likes = get_db().execute(
-        'SELECT COUNT(*) FROM post_like WHERE liked = TRUE'
-    ).fetchall()
-    print(likes)
-    for row in likes:
-        print('\tLIKES', row[0])
-    rows = get_db().execute(
-        'SELECT p.id, title, body, created, author_id, username'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = ?',
-        (id,)
-    ).fetchall()
-    for row in rows:
-        print(row[0], end='\t')
-        print(row[1])
-    print('--------->TEST')
-
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
 
@@ -132,8 +114,14 @@ def delete(id):
 @login_required
 def like(id):
     db = get_db()
+    existing_like = db.execute(
+        'SELECT * FROM post_like WHERE user_id = ? AND post_id = ?',
+        (g.user['id'], id)
+    ).fetchone()
+
+    # Likes should be unique
+
     db.execute(
-        # 'UPDATE post_like SET liked = TRUE WHERE user_id = ? AND post_id = ?',
         'INSERT OR REPLACE INTO post_like (user_id, post_id, liked) VALUES (?, ?, TRUE)',
         (g.user['id'], id)
     )

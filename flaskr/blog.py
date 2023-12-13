@@ -15,7 +15,8 @@ def index():
     db = get_db()
     posts = db.execute(
         'SELECT p.id, title, body, created, author_id, username, '
-        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
+        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
         'FROM post p JOIN user u ON p.author_id = u.id '
         'ORDER BY created DESC'
     ).fetchall()
@@ -57,7 +58,8 @@ def create():
 def get_post(id, check_author=True):
     post = get_db().execute(
         'SELECT p.id, title, body, created, author_id, username, '
-        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
+        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
         'FROM post p JOIN user u ON p.author_id = u.id '
         'WHERE p.id = ?',
         (id, )
@@ -66,7 +68,23 @@ def get_post(id, check_author=True):
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
 
-    return post
+    comments = get_db().execute(
+        'SELECT c.id, body, author_id, username, created '
+        'FROM comment c JOIN user u ON c.author_id = u.id '
+        'WHERE post_id = ? '
+        'ORDER BY created DESC',
+        (id,)
+    ).fetchall()
+    comments = [dict(row) for row in comments]
+    print('---------->TEST')
+    print('comments:', comments)
+    # for row in comments:
+    #     # 0 'comment id', 1 'content', 2 'user id', 3 'username', 4 'created'
+    #     print('comment id', row[0], 'content', row[1], 'user id', row[2], 'username', row[3])
+    #     print('date', row[4])
+    print('---------->TEST')
+    return render_template('blog/post.html', post=post, comments=comments)
+    # return post
 
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
@@ -132,3 +150,29 @@ def like(id):
     post = dict(post)
     post['likes'] = db.execute('SELECT COUNT(*) FROM post_like WHERE post_id = ? AND liked = TRUE', (id,)).fetchone()[0]
     return render_template('blog/post.html', post=post)
+
+
+from datetime import datetime
+
+
+@bp.route('/<int:id>/comment', methods=('POST',))
+@login_required
+def comment(id):
+    post = get_post(id)
+    body = request.form['body']
+    error = None
+
+    if not body:
+        error = 'Body is required'
+
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute(
+            'INSERT INTO comment (body, created, author_id, post_id)'
+            ' VALUES (?, ?, ?, ?)',
+            (body, datetime.now(), g.user['id'], id)
+        )
+        db.commit()
+        return redirect(url_for('blog.post', id=id))

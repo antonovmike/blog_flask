@@ -8,8 +8,22 @@
   <h1>{{ post.title }}</h1>
   <p>by {{ post.username }} on {{ post.created.strftime('%Y-%m-%d') }}</p>
   <p>{{ post.body }}</p>
+  {% if g.user['id'] == post['author_id'] %}
+    <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+  {% endif %}
   <form method="POST" action="{{ url_for('blog.like', id=post['id']) }}">
     <input type="submit" value="Like ({{ post.likes }})">
   </form>
+  <form method="POST" action="{{ url_for('blog.comment', id=post['id']) }}">
+    <textarea name="body" placeholder="Leave a comment"></textarea>
+    <input type="submit" value="Comment">
+  </form>
+  <p>Comments: {{ post['comments'] }}</p>
+  {% for comment in comments %}
+    <div class="comment">
+      <p>{{ comment.body }}</p>
+      <p>by {{ comment.username }} on {{ comment.created.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    </div>
+  {% endfor %}
 </body>
 </html>

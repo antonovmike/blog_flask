@@ -55,7 +55,7 @@ def create():
     return render_template('blog/create.html')
 
 
-def get_post(id, check_author=True):
+def get_post(id, check_author=False):
     post = get_db().execute(
         'SELECT p.id, title, body, created, author_id, username, '
         '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
@@ -67,6 +67,9 @@ def get_post(id, check_author=True):
 
     if post is None:
         abort(404, f"Post id {id} doesn't exist.")
+
+    if check_author and post['author_id'] != g.user['id']:
+        abort(403)
 
     comments = get_db().execute(
         'SELECT c.id, body, created, author_id, username '
@@ -82,7 +85,7 @@ def get_post(id, check_author=True):
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
-    post = get_post(id)
+    post = get_post(id, check_author=True)
 
     if request.method == 'POST':
         title = request.form['title']
@@ -110,7 +113,7 @@ def update(id):
 @bp.route('/<int:id>/delete', methods=('GET', 'POST'))
 @login_required
 def delete(id):
-    get_post(id)
+    get_post(id, check_author=True)
     db = get_db()
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.commit()

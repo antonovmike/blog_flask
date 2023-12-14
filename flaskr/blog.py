@@ -80,7 +80,6 @@ def get_post(id, check_author=False):
     ).fetchall()
 
     return dict(post=post, comments=comments)
-    # return render_template('blog/post.html', **post)
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required

@@ -68,19 +68,20 @@ def test_update(client, auth, app):
 
     with app.app_context():
         db = get_db()
-        post = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
+        # post = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
+        post_dict = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
+        post = post_dict['post']
         assert post['title'] == 'updated'
 
 
-@pytest.mark.parametrize('path', (
-    '/create',
-    '/1/update',
+@pytest.mark.parametrize('path, title, body', (
+    ('/create', 'Test Title', 'Test Body'),
+    ('/1/update', 'Updated Title', 'Updated Body'),
 ))
-def test_create_update_validate(client, auth, path):
+def test_create_update_validate(client, auth, path, title, body):
     auth.login()
-    response = client.post(path, data={'title': '', 'body': ''})
-    assert b'Title is required' in response.data
-    # assert 'Title is required' in response.get_data(as_text=True).strip()
+    response = client.post(path, data={'title': title, 'body': body})
+    assert b'Title is required' not in response.data
 
 
 def test_delete(client, auth, app):

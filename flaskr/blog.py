@@ -3,6 +3,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
+from datetime import datetime
 from flaskr.auth import login_required
 from flaskr.db import get_db
 
@@ -146,13 +147,9 @@ def like(id):
     return render_template('blog/post.html', post=post)
 
 
-from datetime import datetime
-
-
 @bp.route('/<int:id>/comment', methods=('POST',))
 @login_required
 def comment(id):
-    post = get_post(id)
     body = request.form['body']
     error = None
 

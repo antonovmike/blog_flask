@@ -91,3 +91,46 @@ def test_delete(client, auth, app):
         db = get_db()
         post = db.execute('SELECT * FROM post WHERE id = 1').fetchone()
         assert post is None
+
+
+def test_like(client, app):
+    with app.test_client() as client:
+        with client.session_transaction() as sess:
+            sess['user_id'] = 1
+        client.post('/create', data={'title': 'test post', 'body': 'test body'})
+
+    response = client.post('/1/like')
+    assert response.status_code == 200
+
+    with app.app_context():
+        post = get_db().execute(
+            'SELECT p.id, title, body, created, author_id, username, '
+            '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
+            '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+            'FROM post p JOIN user u ON p.author_id = u.id '
+            'WHERE p.id = ?',
+            (1, )
+        ).fetchone()
+        assert post['likes'] == 1
+
+
+def test_comment(client, app):
+    with app.test_client() as client:
+        with client.session_transaction() as sess:
+            sess['user_id'] = 1
+        client.post('/create', data={'title': 'test post', 'body': 'test body'})
+
+    response = client.post('/1/comment', data={'body': 'test comment'})
+    # Redirect to the post page
+    assert response.status_code == 302
+
+    with app.app_context():
+        comments = get_db().execute(
+            'SELECT c.id, body, created, author_id, username '
+            'FROM comment c JOIN user u ON c.author_id = u.id '
+            'WHERE post_id = ? '
+            'ORDER BY created DESC',
+            (1,)
+        ).fetchall()
+        assert len(comments) == 1
+        assert comments[0]['body'] == 'test comment'

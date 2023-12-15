@@ -60,6 +60,32 @@ class Post:
         ).fetchall()
 
         return dict(post=post, comments=comments)
+    
+    @classmethod
+    def create(cls, title, body, author_id):
+        db = get_db()
+        db.execute(
+            'INSERT INTO post (title, body, author_id)'
+            ' VALUES (?, ?, ?)',
+            (title, body, author_id)
+        )
+        db.commit()
+
+    @classmethod
+    def update(cls, id, title, body):
+        db = get_db()
+        db.execute(
+            'UPDATE post SET title = ?, body = ?'
+            ' WHERE id = ?',
+            (title, body, id)
+        )
+        db.commit()
+
+    @classmethod
+    def delete(cls, id):
+        db = get_db()
+        db.execute('DELETE FROM post WHERE id = ?', (id,))
+        db.commit()
 
 
 @bp.route('/')
@@ -88,13 +114,7 @@ def create():
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO post (title, body, author_id)'
-                ' VALUES (?, ?, ?)',
-                (title, body, g.user['id'])
-            )
-            db.commit()
+            Post.create(title, body, g.user['id'])
             return redirect(url_for('blog.index'))
 
     return render_template('blog/create.html')
@@ -116,13 +136,7 @@ def update(id):
         if error is not None:
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                'UPDATE post SET title = ?, body = ?'
-                ' WHERE id = ?',
-                (title, body, id)
-            )
-            db.commit()
+            Post.update(id, title, body)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
@@ -132,9 +146,7 @@ def update(id):
 @login_required
 def delete(id):
     Post.get_post(id, check_author=True)
-    db = get_db()
-    db.execute('DELETE FROM post WHERE id = ?', (id,))
-    db.commit()
+    Post.delete(id)
     return redirect(url_for('blog.index'))
 
 

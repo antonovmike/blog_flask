@@ -36,6 +36,7 @@ CREATE TABLE comment (
 );
 
 CREATE TABLE post_tag (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   post_id INTEGER NOT NULL,
   tag TEXT NOT NULL,
   FOREIGN KEY (post_id) REFERENCES post (id)

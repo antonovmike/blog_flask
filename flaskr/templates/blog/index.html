@@ -20,6 +20,8 @@
         {% endif %}
       </header>
       <p class="body">{{ post['body'] }}</p>
+      <p>TAG: {{ post.tags }}</p>
+
       <form method="POST" action="{{ url_for('blog.like', id=post['id']) }}">
         <input type="submit" value="Like ({{ post.likes }})">
       </form>

@@ -22,6 +22,17 @@ class Post:
         self.likes = likes
         self.comments = comments
 
+    @property
+    def tags(self):
+        db = get_db()
+        tags_data = db.execute(
+            'SELECT tag FROM post_tag WHERE post_id = ?',
+            (self.id,)
+        ).fetchall()
+        for i in tags_data:
+            print('------->tags_data', i)
+        return [tag[0] for tag in tags_data]
+
     @staticmethod
     def get_posts():
         db = get_db()
@@ -32,6 +43,7 @@ class Post:
             'FROM post p JOIN user u ON p.author_id = u.id '
             'ORDER BY created DESC'
         ).fetchall()
+
         return [Post(*post_data) for post_data in posts_data]
 
     @staticmethod
@@ -58,8 +70,8 @@ class Post:
             'ORDER BY created DESC',
             (id,)
         ).fetchall()
-
-        return dict(post=post, comments=comments)
+        post_obj = Post(*post)
+        return dict(post=post_obj, comments=comments, tags=post_obj.tags)
     
     @classmethod
     def create(cls, title, body, author_id):
@@ -128,6 +140,7 @@ def update(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        tags = request.form.getlist('tags')
         error = None
 
         if not title:
@@ -137,6 +150,7 @@ def update(id):
             flash(error)
         else:
             Post.update(id, title, body)
+            Tag.add_tags(id, tags)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
@@ -197,3 +211,18 @@ def comment(id):
         )
         db.commit()
         return redirect(url_for('blog.post', id=id))
+
+
+class Tag:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def add_tags(cls, post_id, tags):
+        db = get_db()
+        for tag in tags:
+            db.execute(
+                'INSERT INTO post_tag (post_id, tag) VALUES (?, ?)',
+                (post_id, tag)
+            )
+        db.commit()

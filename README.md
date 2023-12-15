@@ -8,6 +8,7 @@ Run:
 ```bash
 flask --app flaskr run --debug
 ```
+Init DB:
 ```bash
 flask --app flaskr init-db
 ```

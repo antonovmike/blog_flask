@@ -8,6 +8,7 @@
   <h1>{{ post['post'].title }}</h1>
   <p>by {{ post['post'].username }} on {{ post['post'].created.strftime('%Y-%m-%d') }}</p>
   <p>{{ post['post'].body }}</p>
+
   {% if g.user['id'] == post['post'].author_id %}
     <a class="action" href="{{ url_for('blog.update', id=post['post'].id) }}">Edit</a>
   {% endif %}

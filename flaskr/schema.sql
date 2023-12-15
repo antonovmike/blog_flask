@@ -34,3 +34,9 @@ CREATE TABLE comment (
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (post_id) REFERENCES post (id)
 );
+
+CREATE TABLE post_tag (
+  post_id INTEGER NOT NULL,
+  tag TEXT NOT NULL,
+  FOREIGN KEY (post_id) REFERENCES post (id)
+);

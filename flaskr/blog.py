@@ -29,9 +29,14 @@ class Post:
             'SELECT tag FROM post_tag WHERE post_id = ?',
             (self.id,)
         ).fetchall()
-        for i in tags_data:
-            print('------->tags_data', i)
+
         return [tag[0] for tag in tags_data]
+    
+    def check_tags(self):
+        if self.tags:
+            print("SOME TAGS")
+        else:
+            print("NO TAGS")
 
     @staticmethod
     def get_posts():
@@ -72,7 +77,7 @@ class Post:
         ).fetchall()
         post_obj = Post(*post)
         return dict(post=post_obj, comments=comments, tags=post_obj.tags)
-    
+
     @classmethod
     def create(cls, title, body, author_id):
         db = get_db()
@@ -82,6 +87,23 @@ class Post:
             (title, body, author_id)
         )
         db.commit()
+        # Check tags:
+        post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
+        created = datetime.now()
+        username = db.execute(
+            'SELECT username FROM user WHERE id = ?',
+            (author_id,)
+        ).fetchone()[0]
+        likes = db.execute(
+            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        comments = db.execute(
+            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        post = Post(post_id, title, body, created, author_id, username, likes, comments)
+        post.check_tags()
 
     @classmethod
     def update(cls, id, title, body):

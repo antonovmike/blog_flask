@@ -26,7 +26,8 @@ class Post:
     def tags(self):
         db = get_db()
         tags_data = db.execute(
-            'SELECT tag FROM post_tag WHERE post_id = ?',
+            'SELECT t.name_tag FROM post_tag pt JOIN'
+            ' tags t ON pt.tags_id = t.id WHERE pt.post_id = ?',
             (self.id,)
         ).fetchall()
 
@@ -89,7 +90,30 @@ class Post:
         db.commit()
 
         post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-        Tag.add_tags(post_id, tags)
+        created = datetime.now()
+        username = db.execute(
+            'SELECT username FROM user WHERE id = ?',
+            (author_id,)
+        ).fetchone()[0]
+        likes = db.execute(
+            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        comments = db.execute(
+            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        post = Post(post_id, title, body, created, author_id, username, likes, comments)
+        post.check_tags()
+
+        for tag in tags:
+            tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+            if tags_id is None:
+                db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+                tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
+            db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (post_id, tags_id))
+
+        db.commit()
 
     @classmethod
     def update(cls, id, title, body):
@@ -228,13 +252,13 @@ class Tag:
         pass
 
     @classmethod
-    def add_tags(cls, post_id, tags):
+    def add_tags(cls, post_id, tags_id):
         db = get_db()
-        for tag in tags:
-            if not db.execute('SELECT 1 FROM post_tag WHERE post_id = ? AND tag = ?', (post_id, tag)).fetchone():
+        for tag in tags_id:
+            if not db.execute('SELECT 1 FROM post_tag WHERE post_id = ? AND tags_id = ?', (post_id, tags_id)).fetchone():
                 db.execute(
                     'INSERT INTO post_tag (post_id, tag)'
                     ' VALUES (?, ?)',
-                    (post_id, tag)
+                    (post_id, tags_id)
                 )
         db.commit()

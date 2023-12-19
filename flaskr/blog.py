@@ -79,7 +79,7 @@ class Post:
         return dict(post=post_obj, comments=comments, tags=post_obj.tags)
 
     @classmethod
-    def create(cls, title, body, author_id):
+    def create(cls, title, body, author_id, tags):
         db = get_db()
         db.execute(
             'INSERT INTO post (title, body, author_id)'
@@ -87,23 +87,9 @@ class Post:
             (title, body, author_id)
         )
         db.commit()
-        # Check tags:
+
         post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-        created = datetime.now()
-        username = db.execute(
-            'SELECT username FROM user WHERE id = ?',
-            (author_id,)
-        ).fetchone()[0]
-        likes = db.execute(
-            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        comments = db.execute(
-            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        post = Post(post_id, title, body, created, author_id, username, likes, comments)
-        post.check_tags()
+        Tag.add_tags(post_id, tags)
 
     @classmethod
     def update(cls, id, title, body):
@@ -140,6 +126,8 @@ def create():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
+        tags = request.form.getlist('tags')
+
         error = None
 
         if not title:
@@ -148,7 +136,7 @@ def create():
         if error is not None:
             flash(error)
         else:
-            Post.create(title, body, g.user['id'])
+            Post.create(title, body, g.user['id'], tags)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/create.html')

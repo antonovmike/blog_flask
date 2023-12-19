@@ -231,8 +231,10 @@ class Tag:
     def add_tags(cls, post_id, tags):
         db = get_db()
         for tag in tags:
-            db.execute(
-                'INSERT INTO post_tag (post_id, tag) VALUES (?, ?)',
-                (post_id, tag)
-            )
+            if not db.execute('SELECT 1 FROM post_tag WHERE post_id = ? AND tag = ?', (post_id, tag)).fetchone():
+                db.execute(
+                    'INSERT INTO post_tag (post_id, tag)'
+                    ' VALUES (?, ?)',
+                    (post_id, tag)
+                )
         db.commit()

@@ -174,17 +174,26 @@ def update(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
-        tags = request.form.getlist('tags')
-        error = None
+        tags = request.form.get('tags').split(',')
 
-        if not title:
-            error = 'Title is required'
+        error = None
 
         if error is not None:
             flash(error)
         else:
+            db = get_db()
             Post.update(id, title, body)
-            Tag.add_tags(id, tags)
+
+            tags_id = []
+            for tag in tags:
+                tag_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+                if tag_id is not None:
+                    tags_id.append(tag_id[0])
+                else:
+                    db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+                    tags_id.append(db.execute('SELECT last_insert_rowid()').fetchone()[0])
+
+            Tag.add_tags(id, tags_id)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
@@ -254,11 +263,10 @@ class Tag:
     @classmethod
     def add_tags(cls, post_id, tags_id):
         db = get_db()
-        for tag in tags_id:
-            if not db.execute('SELECT 1 FROM post_tag WHERE post_id = ? AND tags_id = ?', (post_id, tags_id)).fetchone():
+        for tag_id in tags_id:
+            if not db.execute('SELECT 1 FROM post_tag WHERE post_id = ? AND tags_id = ?', (post_id, tag_id)).fetchone():
                 db.execute(
-                    'INSERT INTO post_tag (post_id, tag)'
-                    ' VALUES (?, ?)',
-                    (post_id, tags_id)
+                    'INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)',
+                    (post_id, tag_id)
                 )
         db.commit()

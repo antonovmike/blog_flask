@@ -81,6 +81,9 @@ class Post:
 
     @classmethod
     def create(cls, title, body, author_id, tags):
+        print('-------create, tags', type(tags), tags)
+        splitted = [x.strip() for x in tags[0].split(',')]
+        print('======>', splitted)
         db = get_db()
         db.execute(
             'INSERT INTO post (title, body, author_id)'
@@ -106,9 +109,12 @@ class Post:
         post = Post(post_id, title, body, created, author_id, username, likes, comments)
         post.check_tags()
 
-        for tag in tags:
-            tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+        for tag in splitted:
+            print('--------splitted tag', tag)
+            tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()[0]
+            print('--------for tag in tags', tag, tags_id)
             if tags_id is None:
+                print('-----if tags_id is None', tag)
                 db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
                 tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
             db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (post_id, tags_id))
@@ -150,7 +156,7 @@ def create():
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
-        tags = request.form.getlist('tags')
+        tags = request.form.getlist('tags') # .split(',')
 
         error = None
 
@@ -263,9 +269,42 @@ class Tag:
     @classmethod
     def add_tags(cls, post_id, tags):
         db = get_db()
+        print('--------------TAGS', tags)
         for tag in tags:
-            db.execute(
-                'INSERT INTO post_tag (post_id, tag) VALUES (?, ?)',
-                (post_id, tag)
-            )
+            tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+            if tags_id is None:
+                db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+                tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
+            post_tag_exists = db.execute('SELECT * FROM post_tag WHERE post_id = ? AND tags_id = ?', (post_id, tags_id)).fetchone()
+            if post_tag_exists is None:
+                db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (post_id, tags_id))
         db.commit()
+
+    # @classmethod
+    # def add_tags(cls, post_id, tags):
+    #     db = get_db()
+    #     for tag in tags:
+    #         tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()[0]
+    #         print('A---------tags_id =', tags_id)
+    #         if tags_id is None:
+    #             print('B---------tags_id is None, tags_id =', tags_id)
+    #             db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+    #             tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
+    #             print('----------', tags_id)
+    #         db.execute(
+    #             'INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)',
+    #             (post_id, tags_id)
+    #         )
+    #     db.commit()
+
+
+    # @classmethod
+    # def add_tags(cls, post_id, tags):
+    #     db = get_db()
+    #     for tag in tags:
+    #         tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+    #         db.execute(
+    #             'INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)',
+    #             (post_id, tags_id)
+    #         )
+    #     db.commit()

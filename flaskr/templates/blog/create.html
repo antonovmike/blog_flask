@@ -14,4 +14,5 @@
     <input name="tags" id="tags" value="{{ request.form['tags'] }}">
     <input type="submit" value="Save">
   </form>
+  <script src="{{ url_for('static', filename='js/tags.js') }}"></script>
 {% endblock %}

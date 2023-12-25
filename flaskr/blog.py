@@ -26,7 +26,8 @@ class Post:
     def tags(self):
         db = get_db()
         tags_data = db.execute(
-            'SELECT tag FROM post_tag WHERE post_id = ?',
+            'SELECT t.name_tag FROM post_tag pt JOIN'
+            ' tags t ON pt.tags_id = t.id WHERE pt.post_id = ?',
             (self.id,)
         ).fetchall()
 
@@ -89,7 +90,30 @@ class Post:
         db.commit()
 
         post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-        Tag.add_tags(post_id, tags)
+        created = datetime.now()
+        username = db.execute(
+            'SELECT username FROM user WHERE id = ?',
+            (author_id,)
+        ).fetchone()[0]
+        likes = db.execute(
+            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        comments = db.execute(
+            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        post = Post(post_id, title, body, created, author_id, username, likes, comments)
+        post.check_tags()
+
+        for tag in tags:
+            tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+            if tags_id is None:
+                db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+                tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
+            db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (post_id, tags_id))
+
+        db.commit()
 
     @classmethod
     def update(cls, id, title, body):
@@ -150,17 +174,26 @@ def update(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
-        tags = request.form.getlist('tags')
-        error = None
+        tags = request.form.get('tags').split(',')
 
-        if not title:
-            error = 'Title is required'
+        error = None
 
         if error is not None:
             flash(error)
         else:
+            db = get_db()
             Post.update(id, title, body)
-            Tag.add_tags(id, tags)
+
+            tags_id = []
+            for tag in tags:
+                tag_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
+                if tag_id is not None:
+                    tags_id.append(tag_id[0])
+                else:
+                    db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
+                    tags_id.append(db.execute('SELECT last_insert_rowid()').fetchone()[0])
+
+            Tag.add_tags(id, tags_id)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)

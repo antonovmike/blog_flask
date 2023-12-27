@@ -8,10 +8,11 @@
   <h1>{{ post['post'].title }}</h1>
   <p>by {{ post['post'].username }} on {{ post['post'].created.strftime('%Y-%m-%d') }}</p>
   <p>{{ post['post'].body }}</p>
+
   <p>TAG: 
-  {% for tag in post['post'].tags %}
-    <p>{{ tag }}</p>
-  {% endfor %}</p>
+    {% for tag in post.tags %}
+      <a href="{{ url_for('blog.tag', tag=tag) }}" class="tag">{{ tag }}</a>
+    {% endfor %}</p>
 
   {% if g.user['id'] == post['post'].author_id %}
     <a class="action" href="{{ url_for('blog.update', id=post['post'].id) }}">Edit</a>

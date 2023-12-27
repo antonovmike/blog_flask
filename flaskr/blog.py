@@ -275,6 +275,24 @@ def comment(id):
         return redirect(url_for('blog.post', id=id))
 
 
+@bp.route('/tag/<string:tag>')
+def tag(tag):
+    db = get_db()
+    posts_data = db.execute(
+        'SELECT p.id, title, body, created, author_id, username, '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
+        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+        'FROM post p JOIN user u ON p.author_id = u.id '
+        'JOIN post_tag pt ON p.id = pt.post_id '
+        'JOIN tags t ON pt.tags_id = t.id '
+        'WHERE t.name_tag = ? '
+        'ORDER BY created DESC',
+        (tag,)
+    ).fetchall()
+
+    return render_template('blog/tag.html', posts=[Post(*post_data) for post_data in posts_data], tag=tag)
+
+
 class Tag:
     def __init__(self):
         pass

@@ -123,21 +123,12 @@ class Post:
 
         db.commit()
 
-    # @classmethod
-    # def update(cls, id, title, body, tags):
-    #     print('----update----create, tags', type(tags), tags)
-    #     splitted = [x.strip() for x in tags[0].split(',')]
-    #     print('====update====>', splitted)
-    #     db = get_db()
-    #     db.execute(
-    #         'UPDATE post SET title = ?, body = ?'
-    #         ' WHERE id = ?',
-    #         (title, body, id)
-    #     )
-    #     db.commit()
-
     @classmethod
     def update(cls, id, title, body, tags):
+        print('----@classmethod-update-----ID   ', id)
+        print('----@classmethod-update-----TITLE', title)
+        print('----@classmethod-update-----TAGS ', tags)
+        
         db = get_db()
         db.execute(
             'UPDATE post SET title = ?, body = ?'
@@ -149,19 +140,23 @@ class Post:
         db.execute('DELETE FROM post_tag WHERE post_id = ?', (id,))
 
         tags = tags.split(',')
-        print('----@classmethod-update-----TAGS', tags)
+        print('----@classmethod-update-----TAGS SPLIT', tags)
 
         for tag in tags:
             tag = tag.strip()
-            print('----@classmethod-update-----tag.strip()', tag)
+            print('----@classmethod-update-----TAG STRIP', tag, len(tag))
             tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
-            print('----@classmethod-update-----ID, TAG and TAG\s ID', id, tag, tags_id)
             if tags_id is None:
                 print('----@classmethod-update-----if tags_id is None:', tags_id)
                 print('----@classmethod-update-----if tags_id is None:', tag)
                 db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
                 tags_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-            db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (id, tags_id))
+                print('---------last_insert_rowid', tags_id)
+                db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (id, tags_id))
+            else:
+                print('----@classmethod-update-----if tags_id is not None:', tags_id[0])
+                print('----@classmethod-update-----if tags_id is not None:', tag)
+                db.execute('INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)', (id, tags_id[0]))
 
         db.commit()
 
@@ -214,7 +209,7 @@ def update(id):
     if request.method == 'POST':
         title = request.form['title']
         body = request.form['body']
-        tags = request.form.get('tags') # .split(',')
+        tags = request.form.get('tags')
         print('tags = request.form.get(\'tags\')', tags)
 
         error = None
@@ -303,9 +298,9 @@ class Tag:
 
     @classmethod
     def add_tags(cls, post_id, tags):
-        # print('----add_tags----add_tags(cls, post_id, tags)', tags[0], type(tags))
         db = get_db()
-        print('----add_tags----TAGS:', tags)
+        if isinstance(tags, str):
+            tags = tags.split(', ')
         for tag in tags:
             print('----add_tags----for tag in tags:', tag)
             tags_id = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()

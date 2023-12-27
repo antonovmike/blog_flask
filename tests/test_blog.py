@@ -53,7 +53,7 @@ def test_exists_required(client, auth, path):
 def test_create(client, auth, app):
     auth.login()
     assert client.get('/create').status_code == 200
-    client.post('/create', data={'title': 'created', 'body': ''})
+    client.post('/create', data={'title': 'created', 'body': '', 'author_id': 1, 'tags': ['one', 'two']})
 
     with app.app_context():
         db = get_db()
@@ -64,7 +64,7 @@ def test_create(client, auth, app):
 def test_update(client, auth, app):
     auth.login()
     assert client.get('/1/update').status_code == 200
-    client.post('/1/update', data={'title': 'updated', 'body': ''})
+    client.post('/1/update', data={'id': 1, 'title': 'updated', 'body': '', 'tags': ['one']})
 
     with app.app_context():
         db = get_db()
@@ -78,7 +78,7 @@ def test_update(client, auth, app):
 ))
 def test_create_update_validate(client, auth, path, title, body):
     auth.login()
-    response = client.post(path, data={'title': title, 'body': body})
+    response = client.post(path, data={'title': title, 'body': body, 'tags': ['one']})
     assert b'Title is required' not in response.data
 
 
@@ -97,7 +97,7 @@ def test_like(client, app):
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        client.post('/create', data={'title': 'test post', 'body': 'test body'})
+        client.post('/create', data={'title': 'test post', 'body': 'test body', 'tags': ['one']})
 
     response = client.post('/1/like')
     assert response.status_code == 200
@@ -118,7 +118,7 @@ def test_comment(client, app):
     with app.test_client() as client:
         with client.session_transaction() as sess:
             sess['user_id'] = 1
-        client.post('/create', data={'title': 'test post', 'body': 'test body'})
+        client.post('/create', data={'title': 'test post', 'body': 'test body', 'tags': ['one']})
 
     response = client.post('/1/comment', data={'body': 'test comment'})
     # Redirect to the post page

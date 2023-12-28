@@ -134,3 +134,10 @@ def test_comment(client, app):
         ).fetchall()
         assert len(comments) == 1
         assert comments[0]['body'] == 'test comment'
+
+
+def test_search(client, auth):
+    auth.login()
+    response = client.post('/search', data={'query': "test"})
+    assert response.status_code == 200
+    assert b'test' in response.data

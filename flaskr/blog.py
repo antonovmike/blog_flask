@@ -1,6 +1,7 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
+from flask_sqlalchemy import pagination
 from werkzeug.exceptions import abort
 
 from datetime import datetime
@@ -32,22 +33,18 @@ class Post:
         ).fetchall()
 
         return [tag[0] for tag in tags_data]
-    
-    def check_tags(self):
-        if self.tags:
-            print("SOME TAGS")
-        else:
-            print("NO TAGS")
 
     @staticmethod
-    def get_posts():
+    def get_posts(page, per_page):
         db = get_db()
+        offset = (page - 1) * per_page
         posts_data = db.execute(
             'SELECT p.id, title, body, created, author_id, username, '
             '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
             '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
             'FROM post p JOIN user u ON p.author_id = u.id '
-            'ORDER BY created DESC'
+            'ORDER BY created DESC LIMIT ? OFFSET ?',
+            (per_page, offset)
         ).fetchall()
 
         return [Post(*post_data) for post_data in posts_data]
@@ -105,7 +102,6 @@ class Post:
             (post_id,)
         ).fetchone()[0]
         post = Post(post_id, title, body, created, author_id, username, likes, comments)
-        post.check_tags()
 
         for tag in splitted:
             tag_info = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
@@ -153,8 +149,10 @@ class Post:
 
 @bp.route('/')
 def index():
-    posts = Post.get_posts()
-    return render_template('blog/index.html', posts=posts)
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    posts = Post.get_posts(page, per_page)
+    return render_template('blog/index.html', posts=posts, current_page=page, per_page=per_page)
 
 
 @bp.route('/<int:id>')
@@ -212,7 +210,6 @@ def update(id):
                     db.execute('INSERT INTO tags (name_tag) VALUES (?)', (tag,))
                     tags_id.append(db.execute('SELECT last_insert_rowid()').fetchone()[0])
 
-            # Tag.add_tags(id, tags)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)

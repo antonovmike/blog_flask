@@ -41,4 +41,11 @@
     {% endif %}
   {% endfor %}
 
+  {% if current_page > 1 %}
+    <a href="{{ url_for('blog.index', page=current_page-1) }}">Previous</a>
+  {% endif %}
+  {% if posts|length >= per_page %}
+    <a href="{{ url_for('blog.index', page=current_page+1) }}">Next</a>
+  {% endif %}
+
 {% endblock %}

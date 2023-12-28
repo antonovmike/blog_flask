@@ -293,6 +293,12 @@ def tag(tag):
     return render_template('blog/tag.html', posts=[Post(*post_data) for post_data in posts_data], tag=tag)
 
 
+@bp.route('/alphabet')
+def sort_alpabet():
+    db = get_db()
+    pass
+
+
 class Tag:
     def __init__(self):
         pass

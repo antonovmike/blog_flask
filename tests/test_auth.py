@@ -55,3 +55,12 @@ def test_logout(client, auth):
     with client:
         auth.logout()
         assert 'user_id' not in session
+
+
+def test_load_logged_in_user(client, auth):
+    auth.login()
+
+    with client:
+        client.get('/')
+        assert g.user is not None
+        assert g.user['username'] == 'test'

@@ -293,6 +293,21 @@ def tag(tag):
     return render_template('blog/tag.html', posts=[Post(*post_data) for post_data in posts_data], tag=tag)
 
 
+@bp.route('/search', methods=('POST',))
+def search():
+    query = request.form['query']
+    db = get_db()
+    posts_data = db.execute(
+        'SELECT p.id, title, body, created, author_id, username, '
+        '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
+        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+        'FROM post p JOIN user u ON p.author_id = u.id '
+        'WHERE title LIKE ?',
+        ('%' + query + '%',)
+    ).fetchall()
+    return render_template('blog/search.html', posts=[Post(*post_data) for post_data in posts_data], query=query)
+
+
 class Tag:
     def __init__(self):
         pass

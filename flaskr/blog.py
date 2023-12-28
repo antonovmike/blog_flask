@@ -293,9 +293,10 @@ def tag(tag):
     return render_template('blog/tag.html', posts=[Post(*post_data) for post_data in posts_data], tag=tag)
 
 
-@bp.route('/alphabet')
+@bp.route('/alphabet', methods=['POST',])
 def sort_alpabet():
     db = get_db()
+    post_data = db.execute('SELECT * FROM post ORDER BY title')
     pass
 
 

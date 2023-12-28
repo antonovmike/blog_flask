@@ -12,6 +12,10 @@
     <textarea name="body" id="body">{{ request.form['body'] or post['post'].body }}</textarea>
     <label for="tags">Tags:</label>
     <input name="tags" id="tags" value="{{ ', '.join(request.form['tags']) or ', '.join(post['post'].tags) }}">
+
+    <label for="image">Image:</label>
+    <input type="file" id="image" name="image">
+    
     <input type="submit" value="Save">
   </form>
   <hr>

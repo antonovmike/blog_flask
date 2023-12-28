@@ -25,6 +25,7 @@
           <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
       </header>
+
       <p class="body">{{ post['body'] }}</p>
       <p>TAG: 
         {% for tag in post.tags %}

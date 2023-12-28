@@ -5,13 +5,17 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
     <label for="tags">Tags:</label>
-    <input name="tags" id="tags" value="{{ request.form.get('tags', '') }}">
+    <input name="tags" id="tags" value="{{ request.form['tags'] }}">
+    
+    <label for="image">Image:</label>
+    <input type="file" id="image" name="image">
+    
     <input type="submit" value="Save">
   </form>
   <script src="{{ url_for('static', filename='js/tags.js') }}"></script>

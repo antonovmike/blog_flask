@@ -25,6 +25,10 @@
     <input type="submit" value="Comment">
   </form>
 
+  {% if post['image'] %}
+    <img src="{{ url_for('static', filename=post['image']) }}" alt="Post image">
+  {% endif %}
+
   {% for comment in post['comments'] %}
     <div class="comment">
       <p>Comment {{ comment['body'] }}</p>

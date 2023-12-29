@@ -58,7 +58,8 @@ class Post:
         post = get_db().execute(
             'SELECT p.id, title, body, created, author_id, username, '
             '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
-            '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+            '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, '
+            '(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image '
             'FROM post p JOIN user u ON p.author_id = u.id '
             'WHERE p.id = ?',
             (id, )
@@ -78,7 +79,7 @@ class Post:
             (id,)
         ).fetchall()
         post_obj = Post(*post)
-        return dict(post=post_obj, comments=comments, tags=post_obj.tags)
+        return dict(post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image)
 
     @classmethod
     def create(cls, title, body, author_id, tags):
@@ -92,24 +93,6 @@ class Post:
         db.commit()
 
         post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-        created = datetime.now()
-        username = db.execute(
-            'SELECT username FROM user WHERE id = ?',
-            (author_id,)
-        ).fetchone()[0]
-        likes = db.execute(
-            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        comments = db.execute(
-            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        image = db.execute(
-            'SELECT COUNT(*) FROM image WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        post = Post(post_id, title, body, created, author_id, username, likes, comments, image)
 
         for tag in splitted:
             tag_info = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
@@ -186,6 +169,21 @@ def create():
             flash(error)
         else:
             Post.create(title, body, g.user['id'], tags)
+            # return redirect(url_for('blog.index'))
+            print('---------upload----')
+            if 'image' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files['image']
+            if file.filename == '':
+                flash('No selected file')
+                return redirect(request.url)
+            if file:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join('flaskr/static/images', filename))
+                db = get_db()
+                db.execute('INSERT INTO image (post_id, image_path) VALUES (?, ?)', (g.user['id'], '/static/images/' + filename))
+                db.commit()
             return redirect(url_for('blog.index'))
 
     return render_template('blog/create.html')

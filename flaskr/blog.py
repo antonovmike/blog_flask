@@ -107,6 +107,8 @@ class Post:
 
         db.commit()
 
+        return post_id
+
     @classmethod
     def update(cls, id, title, body, tags):
         db = get_db()
@@ -170,8 +172,7 @@ def create():
         if error is not None:
             flash(error)
         else:
-            Post.create(title, body, g.user['id'], tags)
-            # return redirect(url_for('blog.index'))
+            post_id = Post.create(title, body, g.user['id'], tags)
             print('---------upload----')
             if 'image' not in request.files:
                 flash('No file part')
@@ -184,7 +185,7 @@ def create():
                 filename = secure_filename(file.filename)
                 file.save(os.path.join('flaskr/static/images', filename))
                 db = get_db()
-                db.execute('INSERT INTO image (post_id, image_path) VALUES (?, ?)', (g.user['id'], '/static/images/' + filename))
+                db.execute('INSERT INTO image (post_id, image_path) VALUES (?, ?)', (post_id, '/static/images/' + filename))
                 db.commit()
             return redirect(url_for('blog.index'))
 
@@ -311,26 +312,6 @@ def search():
         ('%' + query + '%',)
     ).fetchall()
     return render_template('blog/search.html', posts=[Post(*post_data) for post_data in posts_data], query=query)
-
-
-@bp.route('/upload', methods=['POST'])
-@login_required
-def upload_image():
-    print('---------upload----')
-    if 'image' not in request.files:
-        flash('No file part')
-        return redirect(request.url)
-    file = request.files['image']
-    if file.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if file:
-        filename = secure_filename(file.filename)
-        file.save(os.path.join('flaskr/static/images', filename))
-        db = get_db()
-        db.execute('INSERT INTO image (post_id, image_path) VALUES (?, ?)', (g.user['id'], '/static/images/' + filename))
-        db.commit()
-        return redirect(url_for('blog.index'))
 
 
 class Tag:

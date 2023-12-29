@@ -173,14 +173,12 @@ def create():
             flash(error)
         else:
             post_id = Post.create(title, body, g.user['id'], tags)
-            print('---------upload----')
             if 'image' not in request.files:
                 flash('No file part')
                 return redirect(request.url)
             file = request.files['image']
             if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
+                pass
             if file:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join('flaskr/static/images', filename))

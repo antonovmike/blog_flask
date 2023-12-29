@@ -59,7 +59,7 @@ class Post:
             'SELECT p.id, title, body, created, author_id, username, '
             '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
             '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, '
-            '(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image '
+            '(SELECT image_path FROM image WHERE post_id = p.id LIMIT 1) AS image '
             'FROM post p JOIN user u ON p.author_id = u.id '
             'WHERE p.id = ?',
             (id, )
@@ -79,6 +79,8 @@ class Post:
             (id,)
         ).fetchall()
         post_obj = Post(*post)
+        print(post_obj.image, type(post_obj.image))
+
         return dict(post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image)
 
     @classmethod

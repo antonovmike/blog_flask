@@ -31,6 +31,8 @@
     <input type="submit" value="Comment">
   </form>
 
+  <img src="{{ post.image }}" alt="Post image">
+
   {% for comment in post['comments'] %}
     <div class="comment">
       <p>Comment {{ comment['body'] }}</p>

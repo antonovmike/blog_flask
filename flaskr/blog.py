@@ -87,20 +87,6 @@ class Post:
         db.commit()
 
         post_id = db.execute('SELECT last_insert_rowid()').fetchone()[0]
-        created = datetime.now()
-        username = db.execute(
-            'SELECT username FROM user WHERE id = ?',
-            (author_id,)
-        ).fetchone()[0]
-        likes = db.execute(
-            'SELECT COUNT(*) FROM post_like WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        comments = db.execute(
-            'SELECT COUNT(*) FROM comment WHERE post_id = ?',
-            (post_id,)
-        ).fetchone()[0]
-        post = Post(post_id, title, body, created, author_id, username, likes, comments)
 
         for tag in splitted:
             tag_info = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()

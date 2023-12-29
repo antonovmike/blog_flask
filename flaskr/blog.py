@@ -1,7 +1,10 @@
+import os
+
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
 from werkzeug.exceptions import abort
+from werkzeug.utils import secure_filename
 
 from datetime import datetime
 from flaskr.auth import login_required
@@ -12,7 +15,7 @@ bp = Blueprint('blog', __name__)
 
 
 class Post:
-    def __init__(self, id, title, body, created, author_id, username, likes, comments):
+    def __init__(self, id, title, body, created, author_id, username, likes, comments, image):
         self.id = id
         self.title = title
         self.body = body
@@ -21,6 +24,7 @@ class Post:
         self.username = username
         self.likes = likes
         self.comments = comments
+        self.image = image
 
     @property
     def tags(self):
@@ -40,7 +44,8 @@ class Post:
         posts_data = db.execute(
             'SELECT p.id, title, body, created, author_id, username, '
             '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
-            '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+            '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, '
+            '(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image '
             'FROM post p JOIN user u ON p.author_id = u.id '
             'ORDER BY created DESC LIMIT ? OFFSET ?',
             (per_page, offset)
@@ -100,7 +105,11 @@ class Post:
             'SELECT COUNT(*) FROM comment WHERE post_id = ?',
             (post_id,)
         ).fetchone()[0]
-        post = Post(post_id, title, body, created, author_id, username, likes, comments)
+        image = db.execute(
+            'SELECT COUNT(*) FROM image WHERE post_id = ?',
+            (post_id,)
+        ).fetchone()[0]
+        post = Post(post_id, title, body, created, author_id, username, likes, comments, image)
 
         for tag in splitted:
             tag_info = db.execute('SELECT id FROM tags WHERE name_tag = ?', (tag,)).fetchone()
@@ -302,6 +311,26 @@ def search():
         ('%' + query + '%',)
     ).fetchall()
     return render_template('blog/search.html', posts=[Post(*post_data) for post_data in posts_data], query=query)
+
+
+@bp.route('/upload', methods=['POST'])
+@login_required
+def upload_image():
+    print('---------upload----')
+    if 'image' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['image']
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join('flaskr/static/images', filename))
+        db = get_db()
+        db.execute('INSERT INTO image (post_id, image_path) VALUES (?, ?)', (g.user['id'], '/static/images/' + filename))
+        db.commit()
+        return redirect(url_for('blog.index'))
 
 
 class Tag:

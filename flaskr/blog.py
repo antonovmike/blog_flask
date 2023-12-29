@@ -79,8 +79,6 @@ class Post:
             (id,)
         ).fetchall()
         post_obj = Post(*post)
-        print(post_obj.image, type(post_obj.image))
-
         return dict(post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image)
 
     @classmethod
@@ -304,7 +302,8 @@ def search():
     posts_data = db.execute(
         'SELECT p.id, title, body, created, author_id, username, '
         '(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, '
-        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments '
+        '(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, '
+        '(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image '
         'FROM post p JOIN user u ON p.author_id = u.id '
         'WHERE title LIKE ?',
         ('%' + query + '%',)

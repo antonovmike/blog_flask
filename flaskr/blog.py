@@ -93,6 +93,10 @@ class Post:
             post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image
         )
 
+    @property
+    def body_html(self):
+        return md.convert(self.body)
+
     @classmethod
     def create(cls, title, body, author_id, tags):
         splitted = [x.strip() for x in tags[0].split(",")]

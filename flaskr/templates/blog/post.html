@@ -7,7 +7,7 @@
 <body>
   <h1>{{ post['post'].title }}</h1>
   <p>by {{ post['post'].username }} on {{ post['post'].created.strftime('%Y-%m-%d') }}</p>
-  <p class="body">{{ post['post'].body | replace('\n', '<br>') | safe }}</p>
+  <p class="body">{{ post['post'].body_html | safe }}</p>
 
   <p>TAG: 
     {% for tag in post.tags %}

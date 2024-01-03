@@ -39,5 +39,5 @@ Swap SECRET_KEY='dev' with some random bytes
 - ✅ A search box that filters the index page by name.
 - ✅ Paged display. Only show 5 posts per page.
 - ✅ Upload an image to go along with a post.
-- ➡️  Format posts using Markdown.
-- An RSS feed of new posts.
+- ✅ Format posts using Markdown.
+- ➡️  An RSS feed of new posts.

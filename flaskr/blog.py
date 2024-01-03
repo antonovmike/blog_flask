@@ -32,8 +32,8 @@ class Post:
     def tags(self):
         db = get_db()
         tags_data = db.execute(
-            "SELECT t.name_tag FROM post_tag pt JOIN"
-            " tags t ON pt.tags_id = t.id WHERE pt.post_id = ?",
+            "SELECT t.name_tag FROM post_tag pt JOIN "
+            "tags t ON pt.tags_id = t.id WHERE pt.post_id = ?",
             (self.id,),
         ).fetchall()
 
@@ -315,7 +315,8 @@ def tag(tag):
     posts_data = db.execute(
         "SELECT p.id, title, body, created, author_id, username, "
         "(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, "
-        "(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments "
+        "(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, "
+        "(SELECT image_path FROM image WHERE post_id = p.id LIMIT 1) AS image "
         "FROM post p JOIN user u ON p.author_id = u.id "
         "JOIN post_tag pt ON p.id = pt.post_id "
         "JOIN tags t ON pt.tags_id = t.id "
@@ -325,7 +326,9 @@ def tag(tag):
     ).fetchall()
 
     return render_template(
-        "blog/tag.html", posts=[Post(*post_data) for post_data in posts_data], tag=tag
+        "blog/tag.html",
+        posts=[Post(*post_data) for post_data in posts_data],
+        tag=tag,
     )
 
 

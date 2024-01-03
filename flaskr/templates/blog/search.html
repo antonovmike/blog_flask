@@ -10,7 +10,10 @@
         <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
         {% endif %}
     </header>
-    <p class="body">{{ post.body_html | safe }}</p>
+
+    {% set lines = post.body_html.split('\n') %}
+    {% set first_three_lines = lines[:3] %}
+    <p class="body">{{ '\n'.join(first_three_lines) | safe }}</p>
 
     <p>TAG: 
       {% for tag in post.tags %}

@@ -356,6 +356,11 @@ def search():
     )
 
 
+@bp.route('/rss')
+def rss():
+    pass
+
+
 class Tag:
     def __init__(self):
         pass

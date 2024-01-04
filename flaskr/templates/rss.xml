@@ -7,8 +7,8 @@
     <language>{{ language }}</language>
     {% for post in posts %}
       <item>
-      <title>{{ post.title }}</title>
-      <description>{{ post.title }}</description>
+      <title>{{ post.title }} by {{ post.username }}</title>
+      <description>"{{ post.title }}" by {{ post.username }}</description>
         <p></p>
 <!--      <description>{{ post.body }}</description>-->
 <!--        <p></p>-->

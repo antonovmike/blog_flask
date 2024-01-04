@@ -40,4 +40,4 @@ Swap SECRET_KEY='dev' with some random bytes
 - ✅ Paged display. Only show 5 posts per page.
 - ✅ Upload an image to go along with a post.
 - ✅ Format posts using Markdown.
-- ➡️  An RSS feed of new posts.
+- ✅ An RSS feed of new posts.

@@ -37,12 +37,7 @@ def create():
         body = request.form["body"]
         tags = request.form.getlist("tags")
 
-        error = None
-
-        if not title:
-            error = "Title is required"
-        elif not body:
-            error = "Body is required"
+        error = validate_post(title, body)
 
         if error is not None:
             flash(error)
@@ -78,12 +73,7 @@ def update(id):
         body = request.form["body"]
         tags = request.form.get("tags")
 
-        error = None
-
-        if not title:
-            error = "Title is required"
-        elif not body:
-            error = "Body is required"
+        error = validate_post(title, body)
 
         if error is not None:
             flash(error)
@@ -247,3 +237,12 @@ class Tag:
                         (post_id, tags_id),
                     )
         db.commit()
+
+
+def validate_post(title, body):
+    error = None
+    if not title:
+        error = "Title is required"
+    elif not body:
+        error = "Body is required"
+    return error

@@ -223,20 +223,20 @@ class Tag:
         db = get_db()
         if isinstance(tags_id, str):
             tags = tags_id.split(", ")
-        for tag in tags:
-            tags_id = db.execute(
-                "SELECT id FROM tags WHERE name_tag = ?", (tag,)
-            ).fetchone()
-            if tags_id is None:
-                db.execute("INSERT INTO tags (name_tag) VALUES (?)", (tag,))
-                tags_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
-            post_tag_exists = db.execute(
-                "SELECT * FROM post_tag WHERE post_id = ? AND tags_id = ?",
-                (post_id, tags_id),
-            ).fetchone()
-            if post_tag_exists is None:
-                db.execute(
-                    "INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)",
+            for tag in tags:
+                tags_id = db.execute(
+                    "SELECT id FROM tags WHERE name_tag = ?", (tag,)
+                ).fetchone()
+                if tags_id is None:
+                    db.execute("INSERT INTO tags (name_tag) VALUES (?)", (tag,))
+                    tags_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+                post_tag_exists = db.execute(
+                    "SELECT * FROM post_tag WHERE post_id = ? AND tags_id = ?",
                     (post_id, tags_id),
-                )
+                ).fetchone()
+                if post_tag_exists is None:
+                    db.execute(
+                        "INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)",
+                        (post_id, tags_id),
+                    )
         db.commit()

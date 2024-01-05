@@ -13,6 +13,34 @@ from .post import Post
 bp = Blueprint("blog", __name__)
 
 
+class Tag:
+    def __init__(self):
+        pass
+
+    @classmethod
+    def add_tags(cls, post_id, tags_id):
+        db = get_db()
+        if isinstance(tags_id, str):
+            tags = tags_id.split(", ")
+            for tag in tags:
+                tags_id = db.execute(
+                    "SELECT id FROM tags WHERE name_tag = ?", (tag,)
+                ).fetchone()
+                if tags_id is None:
+                    db.execute("INSERT INTO tags (name_tag) VALUES (?)", (tag,))
+                    tags_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
+                post_tag_exists = db.execute(
+                    "SELECT * FROM post_tag WHERE post_id = ? AND tags_id = ?",
+                    (post_id, tags_id),
+                ).fetchone()
+                if post_tag_exists is None:
+                    db.execute(
+                        "INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)",
+                        (post_id, tags_id),
+                    )
+        db.commit()
+
+
 @bp.route("/")
 def index():
     page = request.args.get("page", 1, type=int)
@@ -209,34 +237,6 @@ def rss():
         'ORDER BY p.created DESC'
     ).fetchall()
     return render_template('rss.xml', posts=posts, mimetype='application/rss+xml')
-
-
-class Tag:
-    def __init__(self):
-        pass
-
-    @classmethod
-    def add_tags(cls, post_id, tags_id):
-        db = get_db()
-        if isinstance(tags_id, str):
-            tags = tags_id.split(", ")
-            for tag in tags:
-                tags_id = db.execute(
-                    "SELECT id FROM tags WHERE name_tag = ?", (tag,)
-                ).fetchone()
-                if tags_id is None:
-                    db.execute("INSERT INTO tags (name_tag) VALUES (?)", (tag,))
-                    tags_id = db.execute("SELECT last_insert_rowid()").fetchone()[0]
-                post_tag_exists = db.execute(
-                    "SELECT * FROM post_tag WHERE post_id = ? AND tags_id = ?",
-                    (post_id, tags_id),
-                ).fetchone()
-                if post_tag_exists is None:
-                    db.execute(
-                        "INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)",
-                        (post_id, tags_id),
-                    )
-        db.commit()
 
 
 def validate_post(title, body):

@@ -10,8 +10,6 @@
       <title>{{ post.title }} by {{ post.username }}</title>
       <description>"{{ post.title }}" by {{ post.username }}</description>
         <p></p>
-<!--      <description>{{ post.body }}</description>-->
-<!--        <p></p>-->
       <link>{{ url_for('blog.post', id=post.id, _external=True) }}</link>
       <pubDate>{{ post.created.strftime('%a, %d %b %Y %H:%M:%S GMT') }}</pubDate>
       <p></p>

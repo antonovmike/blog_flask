@@ -41,6 +41,8 @@ def create():
 
         if not title:
             error = "Title is required"
+        elif not body:
+            error = "Body is required"
 
         if error is not None:
             flash(error)
@@ -77,6 +79,11 @@ def update(id):
         tags = request.form.get("tags")
 
         error = None
+
+        if not title:
+            error = "Title is required"
+        elif not body:
+            error = "Body is required"
 
         if error is not None:
             flash(error)

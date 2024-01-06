@@ -28,7 +28,7 @@
 
      <p class="body">{{ post.body_html | safe }}</p>
 
-      <p>TAG: 
+      <p>TAG:
         {% for tag in post.tags %}
           <a href="{{ url_for('blog.tag', tag=tag) }}" class="tag">{{ tag }}</a>
         {% endfor %}</p>

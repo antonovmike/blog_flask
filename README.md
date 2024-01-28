@@ -27,7 +27,7 @@ Clone the project from GitHub using the command `git clone https://github.com/an
 ```bash
 pip install -r requirements.txt
 ```
-This command is only used to make the project installable and is not needed after that:
+This command is only used to make the project [installable](https://flask.palletsprojects.com/en/2.1.x/tutorial/install/#install-the-project) and is not needed after that:
 ```bash
 pip install -e .
 ```
@@ -61,8 +61,8 @@ pytest tests/test_auth.py
 Check the test coverage using the command coverage report.
 
 ## [Secret Key](https://github.com/antonovmike/blog_flask#table-of-contents)
-[Configure the Secret Key](https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key)
-Swap SECRET_KEY='dev' with some random bytes
+The secret key is a random string that is used to secure the application data, such as cookies and tokens. It is needed to keep the client-side sessions secure and to prevent data tampering. The secret key should only be known to the application and should be kept relatively constant during the application's life cycle, including through application restarts. 
+Configure the Secret Key. You can refer to the official manual to create your own key: [Configure the Secret Key](https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key).
 
 ## [Flask tutorial](https://github.com/antonovmike/blog_flask#table-of-contents)
 This project was done under formal documentation along with additional exercises "[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/)":

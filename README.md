@@ -1,6 +1,6 @@
 https://flask.palletsprojects.com/
 
-![text chat](https://github.com/antonovmike/flask_tutorial/blob/main/screenshots/blog_post.png)
+![text chat](https://github.com/antonovmike/blog_flask/blob/main/screenshots/blog_post.png)
 
 Libraries:
 ```bash
@@ -15,6 +15,9 @@ Init DB:
 flask --app flaskr init-db
 ```
 Install the Project:
+```bash
+pip install -r requirements.txt
+```
 ```bash
 pip install -e .
 ```

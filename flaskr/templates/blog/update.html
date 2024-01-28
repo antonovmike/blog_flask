@@ -8,8 +8,10 @@
   <form method="post">
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] or post['post'].title }}" required>
+
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] or post['post'].body }}</textarea>
+
     <label for="tags">Tags:</label>
     <input name="tags" id="tags" value="{{ ', '.join(request.form['tags']) or ', '.join(post['post'].tags) }}">
 
@@ -18,9 +20,11 @@
     
     <input type="submit" value="Save">
   </form>
+
   <hr>
   <form action="{{ url_for('blog.delete', id=post['post'].id) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
   </form>
+
   <script src="{{ url_for('static', filename='js/tags.js') }}"></script>
 {% endblock %}

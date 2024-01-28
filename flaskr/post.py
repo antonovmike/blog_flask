@@ -79,6 +79,7 @@ class Post:
             .fetchall()
         )
         post_obj = Post(*post)
+
         return dict(
             post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image
         )

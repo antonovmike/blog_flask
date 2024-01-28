@@ -1,5 +1,7 @@
 https://flask.palletsprojects.com/
 
+![text chat](https://github.com/antonovmike/flask_tutorial/blob/main/screenshots/blog_post.png)
+
 Libraries:
 ```bash
 pip install pytest coverage

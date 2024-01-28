@@ -11,6 +11,8 @@ This project is a blog application using Python, SQLite and Flask. The applicati
 - Run
 - Tests
 - Secret Key
+- Flask tutorial
+- License
 
 ## Requirements
 To run this project, you need to have the following:
@@ -41,6 +43,8 @@ flask --app flaskr init-db
 ```
 
 ## Tests
+To test this project, follow these steps: 
+Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Run the tests using one of these commands:
 ```bash
 pytest
 ```
@@ -50,11 +54,17 @@ pytest -v
 ```bash
 coverage run -m pytest
 ```
+You can also test individual modules by specifying the path to the required module. For example: 
+```bash
+pytest tests/test_auth.py 
+```
+Check the test coverage using the command coverage report.
 
 ## Secret Key
 [Configure the Secret Key](https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key)
 Swap SECRET_KEY='dev' with some random bytes
 
+## Flask tutorial
 This project was done under formal documentation along with additional exercises "[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/)":
 
 - ✅ A detail view to show a single post. Click a post’s title to go to its page.
@@ -66,3 +76,6 @@ This project was done under formal documentation along with additional exercises
 - ✅ Upload an image to go along with a post.
 - ✅ Format posts using Markdown.
 - ✅ An RSS feed of new posts.
+
+## License
+This project is licensed under the MIT License. See the LICENSE https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/ file for details.

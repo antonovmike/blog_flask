@@ -9,6 +9,8 @@ This project is a blog application using Python, SQLite and Flask. The applicati
 - Requirements
 - Installation
 - Run
+- Tests
+- Secret Key
 
 ## Requirements
 To run this project, you need to have the following:
@@ -19,23 +21,26 @@ To run this project, you need to have the following:
 ## Installation
 To install this project, follow these steps:
 
-Clone the project from GitHub using the command `git clone https://github.com/antonovmike/blog_flask.git`. Go to the project folder using the command `cd blog_flask`. Create a virtual environment using the command `python3 -m venv venv` (optional, but recommended). Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Install the required packages using the command `pip install -r requirements.txt`.
+Clone the project from GitHub using the command `git clone https://github.com/antonovmike/blog_flask.git`. Go to the project folder using the command `cd blog_flask`. Create a virtual environment using the command `python3 -m venv venv` (optional, but recommended). Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Install the required packages using the command 
+```bash
+pip install -r requirements.txt
+```
+This command is only used to make the project installable and is not needed after that:
+```bash
+pip install -e .
+```
 
 ## Run
 To run the projsect use command
 ```bash
 flask --app flaskr run --debug
 ```
-On first run, this command will create a database file `flaskr.sqlite` and start the server.
-
-Init DB (or reset DB):
+On first run, this command will create a database file `flaskr.sqlite` and start the server. You can reset DB if something went wrong:
 ```bash
 flask --app flaskr init-db
 ```
-```bash
-pip install -e .
-```
-Test:
+
+## Tests
 ```bash
 pytest
 ```
@@ -46,10 +51,11 @@ pytest -v
 coverage run -m pytest
 ```
 
+## Secret Key
 [Configure the Secret Key](https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key)
 Swap SECRET_KEY='dev' with some random bytes
 
-[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/):
+This project was done under formal documentation along with additional exercises "[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/)":
 
 - ✅ A detail view to show a single post. Click a post’s title to go to its page.
 - ✅ Like / unlike a post.

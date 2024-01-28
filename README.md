@@ -14,13 +14,13 @@ This project is a blog application using Python, SQLite and Flask. The applicati
 - [Flask tutorial](https://github.com/antonovmike/blog_flask#flask-tutorial)
 - [License](https://github.com/antonovmike/blog_flask#license)
 
-## Requirements
+## [Requirements](https://github.com/antonovmike/blog_flask#table-of-contents)
 To run this project, you need to have the following:
 - Python 3.6 or higher
 - pip, a tool for installing Python packages
 - virtualenv, a tool for creating isolated Python environments (optional, but recommended)
 
-## Installation
+## [Installation](https://github.com/antonovmike/blog_flask#table-of-contents)
 To install this project, follow these steps:
 
 Clone the project from GitHub using the command `git clone https://github.com/antonovmike/blog_flask.git`. Go to the project folder using the command `cd blog_flask`. Create a virtual environment using the command `python3 -m venv venv` (optional, but recommended). Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Install the required packages using the command 
@@ -32,7 +32,7 @@ This command is only used to make the project installable and is not needed afte
 pip install -e .
 ```
 
-## Run
+## [Run](https://github.com/antonovmike/blog_flask#table-of-contents)
 To run the projsect use command
 ```bash
 flask --app flaskr run --debug
@@ -42,7 +42,7 @@ On first run, this command will create a database file `flaskr.sqlite` and start
 flask --app flaskr init-db
 ```
 
-## Tests
+## [Tests](https://github.com/antonovmike/blog_flask#table-of-contents)
 To test this project, follow these steps: 
 Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Run the tests using one of these commands:
 ```bash
@@ -60,11 +60,11 @@ pytest tests/test_auth.py
 ```
 Check the test coverage using the command coverage report.
 
-## Secret Key
+## [Secret Key](https://github.com/antonovmike/blog_flask#table-of-contents)
 [Configure the Secret Key](https://flask.palletsprojects.com/en/2.3.x/tutorial/deploy/#configure-the-secret-key)
 Swap SECRET_KEY='dev' with some random bytes
 
-## Flask tutorial
+## [Flask tutorial](https://github.com/antonovmike/blog_flask#table-of-contents)
 This project was done under formal documentation along with additional exercises "[Keep Developing!](https://flask.palletsprojects.com/en/3.0.x/tutorial/next/)":
 
 - ✅ A detail view to show a single post. Click a post’s title to go to its page.
@@ -77,5 +77,5 @@ This project was done under formal documentation along with additional exercises
 - ✅ Format posts using Markdown.
 - ✅ An RSS feed of new posts.
 
-## License
+## [License](https://github.com/antonovmike/blog_flask#table-of-contents)
 This project is licensed under the MIT License. See the LICENSE https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/ file for details.

@@ -1,5 +1,6 @@
-import sqlite3
 import click
+import os
+import sqlite3
 from flask import current_app, g
 
 

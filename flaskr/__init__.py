@@ -1,10 +1,7 @@
 import os
 
 from flask import Flask
-
-# flask --app flaskr run --debug
-# flask --app flaskr init-db
-
+from flaskr.db import init_db
 
 def create_app(test_config=None):
     # create and configure the app
@@ -31,6 +28,9 @@ def create_app(test_config=None):
     @app.route('/hello/')
     def hello():
         return 'Hello, World!'
+
+    with app.app_context():
+        init_db()
 
     from . import db
     db.init_app(app)

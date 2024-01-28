@@ -6,13 +6,13 @@ This project is a blog application using Python, SQLite and Flask. The applicati
 
 
 ## Table of Contents
-- Requirements
-- Installation
-- Run
-- Tests
-- Secret Key
-- Flask tutorial
-- License
+- [Requirements](https://github.com/antonovmike/blog_flask#requirements)
+- [Installation](https://github.com/antonovmike/blog_flask#installation)
+- [Run](https://github.com/antonovmike/blog_flask#run)
+- [Tests](https://github.com/antonovmike/blog_flask#tests)
+- [Secret Key](https://github.com/antonovmike/blog_flask#secret-key)
+- [Flask tutorial](https://github.com/antonovmike/blog_flask#flask-tutorial)
+- [License](https://github.com/antonovmike/blog_flask#license)
 
 ## Requirements
 To run this project, you need to have the following:

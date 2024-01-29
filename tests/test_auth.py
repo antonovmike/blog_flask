@@ -6,7 +6,7 @@ from flaskr.db import get_db
 def test_register(client, app):
     assert client.get('/auth/register').status_code == 200
     response = client.post(
-        '/auth/register', data={'username': 'a', 'password': 'a'}
+        '/auth/register', data={'username': 'a', 'password': 'a', 'avatar': 'test.jpg'}
     )
     assert response.headers["Location"] == "/auth/login"
 
@@ -16,15 +16,15 @@ def test_register(client, app):
         ).fetchone() is not None
 
 
-@pytest.mark.parametrize(('username', 'password', 'message'), (
-    ('', '', b'Username is required.'),
-    ('a', '', b'Password is required.'),
-    ('test', 'test', b'already registered'),
+@pytest.mark.parametrize(('username', 'password', 'avatar', 'message'), (
+    ('', '', '', b'Username is required.'),
+    ('a', '', '', b'Password is required.'),
+    ('test', 'test', '', b'already registered'),
 ))
-def test_register_validate_input(client, username, password, message):
+def test_register_validate_input(client, username, password, avatar, message):
     response = client.post(
         '/auth/register',
-        data={'username': username, 'password': password}
+        data={'username': username, 'password': password, 'avatar': avatar}
     )
     assert message in response.data
 

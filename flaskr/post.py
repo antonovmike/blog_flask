@@ -67,15 +67,20 @@ class Post:
         if check_author and post["author_id"] != g.user["id"]:
             abort(403)
 
-        avatar = (
+        avatar_raw = (
             get_db()
             .execute(
                 "SELECT avatar_path FROM user WHERE id = ?",
-                (id,),
+                (post["author_id"],),
             )
             .fetchone()
         )
 
+        if avatar_raw[0] == '':
+            avatar = "no_ava.jpg"
+        else:
+            avatar = avatar_raw[0]
+        print('--------->', avatar)
         comments = (
             get_db()
             .execute(
@@ -90,7 +95,7 @@ class Post:
         post_obj = Post(*post)
 
         return dict(
-            post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image, avatar=avatar[0]
+            post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image, avatar=avatar
         )
 
     @property

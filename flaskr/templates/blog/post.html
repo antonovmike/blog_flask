@@ -6,11 +6,12 @@
 
 {% block content %}
     <h1>{{ post['post'].title }}</h1>
+
+    <p>post['avatar']</p>
+
     <p>by <img src="{{ url_for('static', filename='images/' + post['avatar']) }}"
       style="max-height: 20px"
       alt="User's avatar"> {{ post['post'].username }} on {{ post['post'].created.strftime('%Y-%m-%d') }}</p>
-
-    
 
     <p class="body">{{ post['post'].body_html | safe }}</p>
 

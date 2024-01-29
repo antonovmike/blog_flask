@@ -15,7 +15,6 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        # avatar_path = request.form['avatar']
         avatar_path = request.form['avatar'].replace(" ", "_")
         db = get_db()
         error = None

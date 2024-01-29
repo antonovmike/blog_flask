@@ -81,6 +81,7 @@ class Post:
         else:
             avatar = avatar_raw[0]
         print('--------->', avatar)
+
         comments = (
             get_db()
             .execute(

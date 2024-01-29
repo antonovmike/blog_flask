@@ -37,7 +37,7 @@ To run the projsect use command
 ```bash
 flask --app flaskr run --debug
 ```
-On first run, this command will create a database file `flaskr.sqlite` and start the server. You can reset DB if something went wrong:
+On first run, this command will create a database file `flaskr.sqlite` and start the server. Or you can use special command to init DB:
 ```bash
 flask --app flaskr init-db
 ```

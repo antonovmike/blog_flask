@@ -1,11 +1,17 @@
 import functools
+import logging
+import os
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 from flaskr.db import get_db
 
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -15,20 +21,33 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        avatar_path = request.form['avatar'].replace(" ", "_")
-        db = get_db()
+
         error = None
+
+        if 'avatar' in request.files:
+            file = request.files['avatar']
+            filename = file.filename
+            if filename == '':
+                filename = "no_ava.jpg"
+            else:
+                file.save(os.path.join("flaskr/static/images", filename))
+        else:
+            filename = 'no_ava.jpg'
+
 
         if not username:
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
 
-        if error is None:
+        if error is not None:
+            flash(error)
+        else:
             try:
+                db = get_db()
                 db.execute(
                     "INSERT INTO user (username, password, avatar_path) VALUES (?, ?, ?)",
-                    (username, generate_password_hash(password), avatar_path),
+                    (username, generate_password_hash(password), filename),
                 )
                 db.commit()
             except db.IntegrityError:

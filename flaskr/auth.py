@@ -28,7 +28,7 @@ def register():
             file = request.files['avatar']
             filename = file.filename
             if filename == '':
-                filename = "no_ava.jpg"
+                filename = "default_ava/no_ava.jpg"
             else:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join("flaskr/static/images", filename))

@@ -42,6 +42,7 @@ class Tag:
                         "INSERT INTO post_tag (post_id, tags_id) VALUES (?, ?)",
                         (post_id, tags_id),
                     )
+
         db.commit()
 
 
@@ -50,6 +51,9 @@ def index():
     page = request.args.get("page", 1, type=int)
     per_page = 5
     posts = Post.get_posts(page, per_page)
+
+    logger.debug(f'Page number: {page}')
+
     return render_template(
         "blog/index.html", posts=posts, current_page=page, per_page=per_page
     )
@@ -58,6 +62,7 @@ def index():
 @bp.route("/<int:id>")
 def post(id):
     post = Post.get_post(id)
+    logger.debug(f'Post opened: {post}')
     return render_template("blog/post.html", post=post)
 
 
@@ -84,13 +89,18 @@ def create():
             if file:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join("flaskr/static/images", filename))
+
                 logger.debug(f'Image file saved: {filename}')
+
                 db = get_db()
                 db.execute(
                     "INSERT INTO image (post_id, image_path) VALUES (?, ?)",
                     (post_id, "/static/images/" + filename),
                 )
                 db.commit()
+
+                logger.debug(f'Post saved into database: {db}')
+
             return redirect(url_for("blog.index"))
 
     return render_template("blog/create.html")
@@ -100,6 +110,8 @@ def create():
 @login_required
 def update(id):
     post = Post.get_post(id, check_author=True)
+
+    logger.debug(f'Update post: {post}')
 
     if request.method == "POST":
         title = request.form["title"]

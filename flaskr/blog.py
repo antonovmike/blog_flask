@@ -9,6 +9,10 @@ from flaskr.db import get_db
 
 from .post import Post
 
+from .log import init_logger
+
+
+logger = init_logger()
 
 bp = Blueprint("blog", __name__)
 
@@ -80,6 +84,7 @@ def create():
             if file:
                 filename = secure_filename(file.filename)
                 file.save(os.path.join("flaskr/static/images", filename))
+                logger.debug(f'Image file saved: {filename}')
                 db = get_db()
                 db.execute(
                     "INSERT INTO image (post_id, image_path) VALUES (?, ?)",

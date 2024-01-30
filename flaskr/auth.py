@@ -1,5 +1,4 @@
 import functools
-import logging
 import os
 
 from flask import (
@@ -9,9 +8,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 from flaskr.db import get_db
 
+from .log import init_logger
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+
+logger = init_logger()
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -30,9 +30,12 @@ def register():
             if filename == '':
                 filename = "no_ava.jpg"
             else:
+                filename = secure_filename(file.filename)
                 file.save(os.path.join("flaskr/static/images", filename))
+            logger.debug(f'Avatar file saved: {filename}')
         else:
             filename = 'no_ava.jpg'
+            logger.debug(f'No avatar file was uploaded, using default image: {filename}')
 
 
         if not username:

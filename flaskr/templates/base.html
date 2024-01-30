@@ -1,10 +1,12 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Flaskr</title>
+
 <a href="rss">RSS feed</a>
 
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
   <h1>Flask blog</h1>
+
   <ul>
     {% if g.user %}
       <li><span>{{ g.user['username'] }}</span>
@@ -15,6 +17,7 @@
     {% endif %}
   </ul>
 </nav>
+
 <section class="content">
   <header>
     {% block header %}{% endblock %}

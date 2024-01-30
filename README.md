@@ -23,7 +23,15 @@ To run this project, you need to have the following:
 ## [Installation](https://github.com/antonovmike/blog_flask#table-of-contents)
 To install this project, follow these steps:
 
-Clone the project from GitHub using the command `git clone https://github.com/antonovmike/blog_flask.git`. Go to the project folder using the command `cd blog_flask`. Create a virtual environment using the command `python3 -m venv venv` (optional, but recommended). Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Install the required packages using the command 
+Clone the project from GitHub using the command 
+```bash
+git clone https://github.com/antonovmike/blog_flask.git
+```
+Go to the project folder using the command `cd blog_flask`. Create a virtual environment using the command 
+```bash
+python3 -m venv venv
+``` 
+(optional, but recommended). Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Install the required packages using the command 
 ```bash
 pip install -r requirements.txt
 ```

@@ -43,6 +43,7 @@ class Post:
             "ORDER BY created DESC LIMIT ? OFFSET ?",
             (per_page, offset),
         ).fetchall()
+
         return [Post(*post_data) for post_data in posts_data]
 
     @staticmethod

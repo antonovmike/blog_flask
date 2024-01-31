@@ -17,6 +17,7 @@ class Post:
         self.likes = likes
         self.comments = comments
         self.image = image
+        self.avatar = avatar
 
     @property
     def tags(self):
@@ -42,9 +43,7 @@ class Post:
             "ORDER BY created DESC LIMIT ? OFFSET ?",
             (per_page, offset),
         ).fetchall()
-
-        return [dict(zip(['id', 'title', 'body', 'created', 'author_id', 'username', 'likes', 'comments', 'image', 'avatar'], post_data)) for post_data in posts_data]
-
+        return [Post(*post_data) for post_data in posts_data]
 
     @staticmethod
     def get_post(id, check_author=False):

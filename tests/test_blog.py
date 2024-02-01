@@ -1,6 +1,6 @@
 import pytest
 from flaskr.db import get_db
-from flaskr.blog import Tag
+from flaskr.blog import Post, Tag, validate_post
 
 
 def test_index(client, auth):
@@ -94,6 +94,29 @@ def test_delete(client, auth, app):
         assert post is None
 
 
+def test_unexisting_post(client, auth):
+    # Save the original get_post function to restore it after the test
+    original_get_post = Post.get_post
+
+    # Override the get_post function
+    def get_post(*args, **kwargs):
+        return None
+
+    try:
+        # Assign the overridden function to the module
+        Post.get_post = get_post
+
+        auth.login()
+        response = client.post('/1234/update')
+        assert response.status_code == 400
+
+        response = client.post('/1234/delete')
+        assert response.status_code == 302
+    finally:
+        # Restore the original function after the test
+        Post.get_post = original_get_post
+
+
 def test_like(client, app):
     with app.test_client() as client:
         with client.session_transaction() as sess:
@@ -185,3 +208,9 @@ def test_rss(client):
     assert response.content_type == 'application/rss+xml'
     assert b'<?xml version="1.0" encoding="UTF-8"?>' in response.data
 
+
+def test_validate_post():
+    assert validate_post("Title", "Body") is None
+    assert validate_post("", "Body") == "Title is required"
+    assert validate_post("Title", "") == "Body is required"
+    assert validate_post("", "") == "Title is required"

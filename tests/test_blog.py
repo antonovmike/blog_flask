@@ -170,5 +170,13 @@ def test_tag(app, client):
         assert b'tag1' in response.data
 
 
-def test_search():
+def test_search(client, auth):
+    auth.login()
+    response = client.post('/search', data={'query': 'test'})
+
+    assert response.status_code == 200
+    assert b'test' in response.data
+
+
+def test_rss():
     pass

@@ -182,6 +182,6 @@ def test_rss(client):
     response = client.get('/rss')
 
     assert response.status_code == 200
-    # assert response.content_type == 'application/rss+xml'
+    assert response.content_type == 'application/rss+xml'
     assert b'<?xml version="1.0" encoding="UTF-8"?>' in response.data
 

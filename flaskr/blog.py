@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, make_response, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from datetime import datetime
@@ -256,7 +256,10 @@ def rss():
         'FROM post p JOIN user u ON p.author_id = u.id '
         'ORDER BY p.created DESC'
     ).fetchall()
-    return render_template('rss.xml', posts=posts, mimetype='application/rss+xml')
+    xml = render_template('rss.xml', posts=posts)
+    response = make_response(xml)
+    response.headers['Content-Type'] = 'application/rss+xml'
+    return response
 
 
 def validate_post(title, body):

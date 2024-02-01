@@ -1,5 +1,6 @@
 import pytest
 from flaskr.db import get_db
+from flaskr.blog import Tag
 
 
 def test_index(client, auth):
@@ -141,3 +142,17 @@ def test_search(client, auth):
     response = client.post('/search', data={'query': "test"})
     assert response.status_code == 200
     assert b'test' in response.data
+
+
+def test_add_tags(app):
+    with app.app_context():
+        tag = Tag()
+        tag.add_tags(1, "tag1, tag2")
+
+        db = get_db()
+
+        tags = db.execute("SELECT * FROM tags").fetchall()
+
+        assert len(tags) == 2
+        assert tags[0]['name_tag'] == 'tag1'
+        assert tags[1]['name_tag'] == 'tag2'

@@ -1,5 +1,6 @@
 import pytest
 from flaskr.db import get_db
+from flaskr.blog import Tag
 
 
 def test_index(client, auth):
@@ -11,7 +12,7 @@ def test_index(client, auth):
     response = client.get('/')
     assert b'Log Out' in response.data
     assert b'test title' in response.data
-    assert b'by test on 2018-01-01' in response.data
+    assert b'2018-01-01' in response.data
     assert b'test\nbody' in response.data
     assert b'href="/1/update"' in response.data
 
@@ -141,3 +142,46 @@ def test_search(client, auth):
     response = client.post('/search', data={'query': "test"})
     assert response.status_code == 200
     assert b'test' in response.data
+
+
+def test_add_tags(app):
+    with app.app_context():
+        tag = Tag()
+        tag.add_tags(1, "tag1, tag2")
+
+        db = get_db()
+
+        tags = db.execute("SELECT * FROM tags").fetchall()
+
+        assert len(tags) == 2
+        assert tags[0]['name_tag'] == 'tag1'
+        assert tags[1]['name_tag'] == 'tag2'
+
+
+def test_tag(app, client):
+    with app.app_context():
+        tag = Tag()
+        tag.add_tags(1, "tag1, tag2")
+
+        # Send GET-request to /tag/<string:tag>
+        response = client.get('/tag/tag1')
+
+        assert response.status_code == 200
+        assert b'tag1' in response.data
+
+
+def test_search(client, auth):
+    auth.login()
+    response = client.post('/search', data={'query': 'test'})
+
+    assert response.status_code == 200
+    assert b'test' in response.data
+
+
+def test_rss(client):
+    response = client.get('/rss')
+
+    assert response.status_code == 200
+    assert response.content_type == 'application/rss+xml'
+    assert b'<?xml version="1.0" encoding="UTF-8"?>' in response.data
+

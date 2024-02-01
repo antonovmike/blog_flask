@@ -8,7 +8,7 @@ def test_config():
 
 def test_hello(client):
     response = client.get('/hello', follow_redirects=True)
-    assert response.data == b'Hello, World!'
+    assert response.data == b'Greetings on my demo blog!'
 
 # the original code from the documentation on the site
 # response = client.get('/hello')

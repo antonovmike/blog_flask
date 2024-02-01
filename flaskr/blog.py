@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, flash, g, redirect, render_template, request, url_for
+from flask import Blueprint, flash, g, make_response, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from datetime import datetime
@@ -209,7 +209,8 @@ def tag(tag):
         "SELECT p.id, title, body, created, author_id, username, "
         "(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, "
         "(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, "
-        "(SELECT image_path FROM image WHERE post_id = p.id LIMIT 1) AS image "
+        "(SELECT image_path FROM image WHERE post_id = p.id LIMIT 1) AS image, "
+        "(SELECT avatar_path FROM user WHERE id = p.author_id) AS avatar "
         "FROM post p JOIN user u ON p.author_id = u.id "
         "JOIN post_tag pt ON p.id = pt.post_id "
         "JOIN tags t ON pt.tags_id = t.id "
@@ -221,7 +222,7 @@ def tag(tag):
     return render_template(
         "blog/tag.html",
         posts=[Post(*post_data) for post_data in posts_data],
-        tag=tag,
+        tag=tag, 
     )
 
 
@@ -233,11 +234,13 @@ def search():
         "SELECT p.id, title, body, created, author_id, username, "
         "(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, "
         "(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, "
-        "(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image "
+        "(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image, "
+        "(SELECT avatar_path FROM user WHERE id = p.author_id) AS avatar "
         "FROM post p JOIN user u ON p.author_id = u.id "
         "WHERE title LIKE ?",
         ("%" + query + "%",),
     ).fetchall()
+
     return render_template(
         "blog/search.html",
         posts=[Post(*post_data) for post_data in posts_data],
@@ -253,7 +256,10 @@ def rss():
         'FROM post p JOIN user u ON p.author_id = u.id '
         'ORDER BY p.created DESC'
     ).fetchall()
-    return render_template('rss.xml', posts=posts, mimetype='application/rss+xml')
+    xml = render_template('rss.xml', posts=posts)
+    response = make_response(xml)
+    response.headers['Content-Type'] = 'application/rss+xml'
+    return response
 
 
 def validate_post(title, body):

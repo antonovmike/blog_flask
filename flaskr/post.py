@@ -6,7 +6,7 @@ from flask import g
 
 class Post:
     def __init__(
-        self, id, title, body, created, author_id, username, likes, comments, image
+        self, id, title, body, created, author_id, username, likes, comments, image, avatar
     ):
         self.id = id
         self.title = title
@@ -17,6 +17,7 @@ class Post:
         self.likes = likes
         self.comments = comments
         self.image = image
+        self.avatar = avatar
 
     @property
     def tags(self):
@@ -29,7 +30,6 @@ class Post:
 
         return [tag[0] for tag in tags_data]
 
-    @staticmethod
     def get_posts(page, per_page):
         db = get_db()
         offset = (page - 1) * per_page
@@ -37,7 +37,8 @@ class Post:
             "SELECT p.id, title, body, created, author_id, username, "
             "(SELECT COUNT(*) FROM post_like WHERE post_id = p.id AND liked = TRUE) AS likes, "
             "(SELECT COUNT(*) FROM comment WHERE post_id = p.id) AS comments, "
-            "(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image "
+            "(SELECT COUNT(*) FROM image WHERE post_id = p.id) AS image, "
+            "(SELECT avatar_path FROM user WHERE id = p.author_id) AS avatar "
             "FROM post p JOIN user u ON p.author_id = u.id "
             "ORDER BY created DESC LIMIT ? OFFSET ?",
             (per_page, offset),
@@ -87,7 +88,7 @@ class Post:
             )
             .fetchall()
         )
-        post_obj = Post(*post)
+        post_obj = Post(*post, avatar=avatar[0])
 
         return dict(
             post=post_obj, comments=comments, tags=post_obj.tags, image=post_obj.image, avatar=avatar[0]

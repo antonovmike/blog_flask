@@ -1,7 +1,8 @@
+from flask import g
 from flaskr.db import get_db
 from werkzeug.exceptions import abort
+
 from .markdown import md
-from flask import g
 
 
 class Post:

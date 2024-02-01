@@ -4,9 +4,9 @@ import os
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from flaskr.db import get_db
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
-from flaskr.db import get_db
 
 from .log import init_logger
 

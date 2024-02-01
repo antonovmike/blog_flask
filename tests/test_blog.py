@@ -1,4 +1,5 @@
 import pytest
+
 from flaskr.db import get_db
 from flaskr.blog import Post, Tag, validate_post
 

@@ -156,3 +156,19 @@ def test_add_tags(app):
         assert len(tags) == 2
         assert tags[0]['name_tag'] == 'tag1'
         assert tags[1]['name_tag'] == 'tag2'
+
+
+def test_tag(app, client):
+    with app.app_context():
+        tag = Tag()
+        tag.add_tags(1, "tag1, tag2")
+
+        # Send GET-request to /tag/<string:tag>
+        response = client.get('/tag/tag1')
+
+        assert response.status_code == 200
+        assert b'tag1' in response.data
+
+
+def test_search():
+    pass

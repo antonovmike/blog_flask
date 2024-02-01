@@ -1,6 +1,6 @@
 import pytest
 from flaskr.db import get_db
-from flaskr.blog import Post, Tag
+from flaskr.blog import Post, Tag, validate_post
 
 
 def test_index(client, auth):
@@ -207,3 +207,10 @@ def test_rss(client):
     assert response.status_code == 200
     assert response.content_type == 'application/rss+xml'
     assert b'<?xml version="1.0" encoding="UTF-8"?>' in response.data
+
+
+def test_validate_post():
+    assert validate_post("Title", "Body") is None
+    assert validate_post("", "Body") == "Title is required"
+    assert validate_post("Title", "") == "Body is required"
+    assert validate_post("", "") == "Title is required"

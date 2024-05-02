@@ -2,12 +2,12 @@ import os
 
 from datetime import datetime
 from flask import Blueprint, flash, g, make_response, redirect, render_template, request, url_for
-from flaskr.auth import login_required
+from flaskr.routers.auth import login_required
 from flaskr.db import get_db
 from werkzeug.utils import secure_filename
 
-from .post import Post
-from .log import init_logger
+from ..post import Post
+from ..log import init_logger
 
 
 logger = init_logger()

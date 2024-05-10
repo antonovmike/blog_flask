@@ -54,17 +54,11 @@ flask --app flaskr init-db
 To test this project, follow these steps: 
 Activate the virtual environment using the command `source venv/bin/activate` on Linux or `venv\Scripts\activate` on Windows (optional, but recommended). Run the tests using one of these commands:
 ```bash
-pytest
-```
-```bash
-pytest -v
-```
-```bash
 coverage run -m pytest
 ```
 You can also test individual modules by specifying the path to the required module. For example: 
 ```bash
-pytest tests/test_auth.py 
+coverage run -m pytest tests/test_auth.py
 ```
 Check the test coverage using the command coverage report.
 

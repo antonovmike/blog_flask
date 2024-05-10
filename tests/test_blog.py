@@ -1,7 +1,7 @@
 import pytest
 
 from flaskr.db import get_db
-from flaskr.blog import Post, validate_post
+from flaskr.routers.blog import Post, validate_post
 
 
 def test_index(client, auth):

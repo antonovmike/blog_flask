@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+
 from flaskr.db import init_db
 
 def create_app(test_config=None):
